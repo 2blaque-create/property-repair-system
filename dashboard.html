@@ -5,6 +5,69 @@
 
     <style>
         body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f4f7fb;
+    color: #222;
+}
+
+.topbar {
+    background: #111827;
+    color: white;
+    padding: 20px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.container {
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th {
+    background: #2563eb;
+    color: white;
+    padding: 12px;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+    background: #f9fafb;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+        body {
             font-family: Arial, sans-serif;
         }
 
@@ -103,7 +166,6 @@
 }
     </style>
 </head>
-
 <body>
 <div class="topnav">
     <a href="/">Home</a>
@@ -111,7 +173,11 @@
     <a href="/technician.html">Technician</a>
     <a href="/suppliers.html">Suppliers</a>
 </div>
-<h1>Repair Dashboard</h1>
+<div class="topbar">
+    Repair Dashboard
+</div>
+
+<div class="container">
 
 <div id="overdueAlerts" style="margin-bottom:20px; padding:10px; border:1px solid red;">
     <strong>Overdue Repairs</strong>
