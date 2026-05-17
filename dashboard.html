@@ -81,11 +81,36 @@
             width: 90%;
             max-width: 900px;
         }
+        .topnav {
+    background: #111827;
+    padding: 15px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.topnav a {
+    color: white;
+    text-decoration: none;
+    background: #2563eb;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.topnav a:hover {
+    background: #1d4ed8;
+}
     </style>
 </head>
 
 <body>
-
+<div class="topnav">
+    <a href="/">Home</a>
+    <a href="/submit-repair.html">Submit Repair</a>
+    <a href="/technician.html">Technician</a>
+    <a href="/suppliers.html">Suppliers</a>
+</div>
 <h1>Repair Dashboard</h1>
 
 <div id="overdueAlerts" style="margin-bottom:20px; padding:10px; border:1px solid red;">
@@ -513,8 +538,14 @@ function openModal(repairId) {
 
                 <div class="detail-label">Landlord Decision</div>
                 <div style="margin-top:10px;">
-                    <button type="button" onclick="saveQuoteDecision('${repair.repair_id}', 'Approved')">Approve Quote</button>
-                    <button type="button" onclick="saveQuoteDecision('${repair.repair_id}', 'Declined')">Decline Quote</button>
+                ${
+                    repair.quotation_status === "Approved" || repair.quotation_status === "Declined"
+                    ? `<div><strong>Decision:</strong> ${repair.quotation_status}</div>`
+                    : `
+                        <button type="button" onclick="saveQuoteDecision('${repair.repair_id}', 'Approved')">Approve Quote</button>
+                        <button type="button" onclick="saveQuoteDecision('${repair.repair_id}', 'Declined')">Decline Quote</button>
+                     `
+                }
                 </div>
 
         <div class="detail-section">
