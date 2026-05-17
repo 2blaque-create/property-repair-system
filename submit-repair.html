@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Property Repair Request</title>
+</head>
+<body>
+
+    <h1>Property Repair Request</h1>
+
+    <form id="repairForm" enctype="multipart/form-data">
+
+  <label>Property Type</label><br>
+  <select name="property_type" required>
+    <option value="Complex">Complex</option>
+    <option value="House">House</option>
+    <option value="Shop">Shop</option>
+  </select><br><br>
+
+  <label>Property Name</label><br>
+  <input type="text" name="property_name" required><br><br>
+
+  <label>Address</label><br>
+  <input type="text" name="address" required><br><br>
+
+  <label>Unit / House / Shop Number</label><br>
+  <input type="text" name="unit_number" required><br><br>
+
+  <label>Trade</label><br>
+  <select name="trade" required>
+    <option value="">Select Trade</option>
+    <option value="plumbing">Plumbing</option>
+    <option value="electrical">Electrical</option>
+    <option value="general_maintenance">General Maintenance</option>
+  </select><br><br>
+
+        <label>Problem Description</label><br>
+        <textarea name="description" required></textarea><br><br>
+
+        <label>Priority</label><br>
+        <select name="priority" required>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+        </select><br><br>
+
+        <label>Availability Date</label><br>
+        <input type="date" name="availability_date"><br><br>
+
+        <label>Availability Time</label><br>
+        <input type="time" name="availability_time"><br><br>
+
+        <label>Contact Name</label><br>
+        <input type="text" name="contact_name"><br><br>
+
+        <label>Designation</label><br>
+        <input type="text" name="designation"><br><br>
+
+        <label>Contact Phone</label><br>
+        <input type="text" name="contact_phone"><br><br>
+
+        <label>Upload Photo</label><br>
+        <input type="file" name="photo" accept="image/*"><br><br>
+
+        <button type="submit">Submit Repair</button>
+
+    </form>
+
+    <p id="message"></p>
+
+    <script>
+        const form = document.getElementById("repairForm");
+
+        form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch("/repairs", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const result = await response.json();
+                document.getElementById("message").innerText = result.message;
+
+                if (response.ok) {
+                    form.reset();
+                }
+            } catch (error) {
+                document.getElementById("message").innerText = "Error submitting repair";
+                console.error(error);
+            }
+        });
+    </script>
+
+</body>
+</html>

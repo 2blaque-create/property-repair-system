@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Repair Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        img {
+            width: 80px;
+            cursor: pointer;
+        }
+
+        .high-priority { background-color: #ffdede; }
+        .medium-priority { background-color: #fff4cc; }
+        .low-priority { background-color: #e6ffe6; }
+
+        .progress-bar {
+            height: 18px;
+            background: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            text-align: center;
+            color: white;
+            font-size: 12px;
+            line-height: 18px;
+        }
+
+        .progress-new { background: #777; }
+        .progress-assigned { background: #3498db; }
+        .progress-completed { background: #27ae60; }
+
+        .history-box {
+            font-size: 12px;
+            max-width: 220px;
+        }
+
+        .hidden-history {
+            display: none;
+        }
+
+        .link-btn {
+            color: blue;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 12px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 40px auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 900px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Repair Dashboard</h1>
+
+<div id="overdueAlerts" style="margin-bottom:20px; padding:10px; border:1px solid red;">
+    <strong>Overdue Repairs</strong>
+    <div id="overdueList">No overdue repairs</div>
+</div>
+
+<h3>Supplier Workload</h3>
+<div id="supplierStats"></div>
+
+<div id="summaryBar" style="margin:15px 0; font-weight:bold;"></div>
+
+<div>
+    <button onclick="setPriorityFilter('all')">All</button>
+    <button onclick="setPriorityFilter('High')">High</button>
+    <button onclick="setPriorityFilter('New')">New</button>
+    <button onclick="setPriorityFilter('Completed')">Completed</button>
+</div>
+
+<div style="margin-top:10px;">
+    Property:
+    <select id="propertyFilter" onchange="setPropertyFilter(this.value)">
+        <option value="all">All</option>
+    </select>
+</div>
+
+<table id="repairsTable">
+    <tr>
+        <th>ID</th>
+        <th>Date</th>
+        <th>Property</th>
+        <th>Unit</th>
+        <th>Description</th>
+        <th>Priority</th>
+        <th>Technician</th>
+        <th>Status</th>
+        <th>Progress</th>
+        <th>Photo</th>
+        <th>History</th>
+    </tr>
+</table>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <button onclick="closeModal()">Close</button>
+        <div id="modalBody"></div>
+    </div>
+</div>
+
+<script>
+
+let repairs = [];
+let suppliers = [];
+
+let currentPriorityFilter = "all";
+let currentPropertyFilter = "all";
+
+async function loadSuppliers() {
+    const res = await fetch("http://localhost:3000/suppliers.json");
+    suppliers = await res.json();
+}
+
+async function loadRepairs() {
+    const res = await fetch("http://localhost:3000/repairs");
+    repairs = await res.json();
+
+    updateSummary();
+    populatePropertyDropdown();
+    updateSupplierStats();
+    updateOverdueAlerts();
+    applyFilters();
+}
+
+function updateSummary() {
+    const total = repairs.length;
+    const high = repairs.filter(r => r.priority === "High").length;
+    const newRepairs = repairs.filter(r => (r.status || "New") === "New").length;
+    const completed = repairs.filter(r => r.status === "Completed").length;
+
+    document.getElementById("summaryBar").innerText =
+        `Total: ${total} | High: ${high} | New: ${newRepairs} | Completed: ${completed}`;
+}
+
+function updateOverdueAlerts() {
+    const overdueList = document.getElementById("overdueList");
+    const now = new Date();
+
+    const overdue = repairs.filter(r => {
+        if (!r.submitted_at || r.status === "Completed") return false;
+
+        const hours = (now - new Date(r.submitted_at)) / (1000 * 60 * 60);
+
+        if (r.priority === "High" && hours > 24) return true;
+        if (r.priority === "Medium" && hours > 48) return true;
+        if (r.priority === "Low" && hours > 72) return true;
+
+        return false;
+    });
+
+    if (overdue.length === 0) {
+        overdueList.innerHTML = "No overdue repairs";
+        return;
+    }
+
+    overdueList.innerHTML = overdue.map(r => `
+        <div>
+            ⚠ ${r.property_name} Unit ${r.unit_number} (${r.priority})
+        </div>
+    `).join("");
+}
+function updateSupplierStats() {
+    const container = document.getElementById("supplierStats");
+    const activeRepairs = repairs.filter(r => r.status !== "Completed");
+
+    const supplierNames = ["Unassigned", ...suppliers.map(s => s.name)];
+    const uniqueSupplierNames = [...new Set(supplierNames)];
+
+    container.innerHTML = uniqueSupplierNames.map(name => {
+        const count = activeRepairs.filter(r => (r.technician || "Unassigned") === name).length;
+        return `<div>${name} — ${count} active repairs</div>`;
+    }).join("");
+}
+
+function populatePropertyDropdown() {
+    const dropdown = document.getElementById("propertyFilter");
+    const properties = [...new Set(repairs.map(r => r.property_name).filter(Boolean))];
+
+    dropdown.innerHTML = `<option value="all">All</option>`;
+
+    properties.forEach(property => {
+        const option = document.createElement("option");
+        option.value = property;
+        option.textContent = property;
+        dropdown.appendChild(option);
+    });
+
+    dropdown.value = currentPropertyFilter;
+}
+
+function calculateProgress(r) {
+    let percent = 10;
+    let stage = "progress-new";
+
+    if (r.status === "Assigned") {
+        percent = 30;
+        stage = "progress-assigned";
+    }
+
+    if (r.status === "Completed") {
+        percent = 100;
+        stage = "progress-completed";
+    }
+
+    return { percent, stage };
+}
+function generateLandlordBrief(r) {
+    const parts = [];
+
+    parts.push(`${r.description || "Repair"} at ${r.property_name || "Unknown property"} Unit ${r.unit_number || "-"}.`);
+
+    if (r.priority) parts.push(`Priority ${r.priority}.`);
+    if (r.technician) parts.push(`Assigned to ${r.technician}.`);
+    if (r.response) parts.push(`Technician response: ${r.response}.`);
+    if (r.confirmed_time) parts.push(`Confirmed time: ${r.confirmed_time}.`);
+    if (r.visit_confirmed) parts.push(`Visit status: ${r.visit_confirmed}.`);
+    if (r.quotation_amount) parts.push(`Quote submitted: $${r.quotation_amount}.`);
+
+    if (r.quotation_status) {
+        parts.push(`Quote status: ${r.quotation_status}.`);
+    } else if (r.quotation_amount) {
+        parts.push(`Awaiting landlord approval.`);
+    }
+
+    if (r.status) parts.push(`Current job status: ${r.status}.`);
+
+    return parts.join(" ");
+}
+
+function buildHistoryCell(history, repairId) {
+    if (!history || history.length === 0) {
+        return "No history";
+    }
+
+    const reversed = [...history].reverse();
+    const shortItems = reversed.slice(0, 2);
+    const fullItems = reversed;
+
+    const shortHtml = shortItems.map(item => `
+        <div>
+            <strong>${item.action}</strong><br>
+            ${new Date(item.timestamp).toLocaleString()}
+        </div>
+    `).join("");
+
+    const fullHtml = fullItems.map(item => `
+        <div>
+            <strong>${item.action}</strong><br>
+            ${new Date(item.timestamp).toLocaleString()}
+        </div>
+    `).join("");
+
+    if (fullItems.length <= 2) {
+        return `<div class="history-box">${shortHtml}</div>`;
+    }
+
+    return `
+        <div class="history-box">
+            <div id="short-history-${repairId}">
+                ${shortHtml}
+                <div class="link-btn" onclick="showFullHistory('${repairId}')">Read more</div>
+            </div>
+            <div id="full-history-${repairId}" class="hidden-history">
+                ${fullHtml}
+                <div class="link-btn" onclick="hideFullHistory('${repairId}')">Hide</div>
+            </div>
+        </div>
+    `;
+}
+
+function showFullHistory(repairId) {
+    document.getElementById(`short-history-${repairId}`).style.display = "none";
+    document.getElementById(`full-history-${repairId}`).style.display = "block";
+}
+
+function hideFullHistory(repairId) {
+    document.getElementById(`short-history-${repairId}`).style.display = "block";
+    document.getElementById(`full-history-${repairId}`).style.display = "none";
+}
+function renderRepairs(list) {
+    const table = document.getElementById("repairsTable");
+
+    table.innerHTML = `
+        <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Property</th>
+            <th>Unit</th>
+            <th>Description</th>
+            <th>Priority</th>
+            <th>Technician</th>
+            <th>Status</th>
+            <th>Progress</th>
+            <th>Photo</th>
+            <th>History</th>
+            <th>Quote File</th>
+            <th>Landlord Brief</th>
+            <th>Details</th>
+        </tr>
+    `;
+
+    list.forEach(r => {
+        const row = document.createElement("tr");
+
+        if (r.priority === "High") row.classList.add("high-priority");
+        if (r.priority === "Medium") row.classList.add("medium-priority");
+        if (r.priority === "Low") row.classList.add("low-priority");
+
+        const progress = calculateProgress(r);
+
+        row.innerHTML = `
+            <td>${r.repair_id}</td>
+            <td>${r.submitted_at ? new Date(r.submitted_at).toLocaleDateString() : "-"}</td>
+            <td>${r.property_name || "-"}</td>
+            <td>${r.unit_number || "-"}</td>
+            <td>${r.description || "-"}</td>
+            <td>${r.priority || "-"}</td>
+
+            <td>
+                <select onchange="updateTechnician('${r.repair_id}', this.value)">
+                    ${suppliers.map(s => `
+                        <option value="${s.name}" ${(r.technician || "Unassigned") === s.name ? "selected" : ""}>
+                            ${s.name}
+                        </option>
+                    `).join("")}
+                </select>
+            </td>
+
+            <td>
+                <select onchange="updateStatus('${r.repair_id}', this.value)">
+                    <option value="New" ${(r.status || "New") === "New" ? "selected" : ""}>New</option>
+                    <option value="Assigned" ${r.status === "Assigned" ? "selected" : ""}>Assigned</option>
+                    <option value="In Progress" ${r.status === "In Progress" ? "selected" : ""}>In Progress</option>
+                    <option value="Completed" ${r.status === "Completed" ? "selected" : ""}>Completed</option>
+                </select>
+            </td>
+
+            <td>
+                <div class="progress-bar">
+                    <div class="progress-fill ${progress.stage}" style="width:${progress.percent}%">
+                        ${progress.percent}%
+                    </div>
+                </div>
+            </td>
+        `;
+
+        const photoCell = document.createElement("td");
+        if (r.photo) {
+            const img = document.createElement("img");
+            img.src = "http://localhost:3000" + r.photo;
+            img.onclick = () => window.open(img.src, "_blank");
+            photoCell.appendChild(img);
+        } else {
+            photoCell.textContent = "No photo";
+        }
+        row.appendChild(photoCell);
+
+        const historyCell = document.createElement("td");
+        historyCell.innerHTML = buildHistoryCell(r.history, r.repair_id);
+        row.appendChild(historyCell);
+
+        const quoteFileCell = document.createElement("td");
+        quoteFileCell.innerHTML = r.quotation_file
+        ? `<a href="${r.quotation_file}" target="_blank">📄 View</a>`
+        : "—";
+        row.appendChild(quoteFileCell);
+
+        const briefCell = document.createElement("td");
+        briefCell.style.maxWidth = "250px";
+        briefCell.style.fontSize = "12px";
+
+        const fullBrief = generateLandlordBrief(r);
+        briefCell.textContent =
+        fullBrief.length > 120 ? fullBrief.slice(0, 120) + "..." : fullBrief;
+
+        row.appendChild(briefCell);
+
+        const detailsCell = document.createElement("td");
+        detailsCell.innerHTML = `<button onclick="openModal('${r.repair_id}')">Open</button>`;
+        row.appendChild(detailsCell);
+
+        table.appendChild(row);
+    });
+}
+function openModal(repairId) {
+    const repair = repairs.find(r => r.repair_id === repairId);
+    if (!repair) return;
+
+    const historyHtml = (repair.history || []).slice().reverse().map(item => `
+        <div style="margin-bottom:8px;">
+            <strong>${item.action}</strong><br>
+            ${new Date(item.timestamp).toLocaleString()}
+        </div>
+    `).join("") || "No history";
+
+    const photoHtml = repair.photo
+        ? `<img class="detail-photo" src="http://localhost:3000${repair.photo}" onclick="window.open('http://localhost:3000${repair.photo}', '_blank')">`
+        : "No photo";
+
+    document.getElementById("modalBody").innerHTML = `
+        <h2>Repair Details</h2>
+
+        <div class="detail-section">
+        <div class="detail-title">Landlord Brief</div>
+        <div class="detail-section">
+        <<div class="detail-title">Quotation Decision</div>
+
+        <div class="detail-label">Quote Status</div>
+        <div>${repair.quotation_status || "Pending / Not decided"}</div>
+
+        <div class="detail-label">Landlord Notes</div>
+        <div>
+        <textarea id="landlord-notes-${repair.repair_id}" placeholder="Add landlord notes...">${repair.landlord_notes || ""}</textarea>
+        </div>
+
+        <div class="detail-label">Landlord Decision</div>
+        <div style="margin-top:10px;">
+          <button type="button" onclick="saveQuoteDecision('${repair.repair_id}', 'Approved')">Approve Quote</button>
+          <button type="button" onclick="saveQuoteDecision('${repair.repair_id}', 'Declined')">Decline Quote</button>
+        </div>
+    }
+</div>
+        <div style="background:#f5f5f5; padding:10px; border-radius:6px;">
+        ${generateLandlordBrief(repair)}
+    </div>
+</div>
+
+        <div class="detail-section">
+            <div class="detail-title">Basic Info</div>
+            <div class="detail-grid">
+                <div class="detail-label">Repair ID</div><div>${repair.repair_id || "-"}</div>
+                <div class="detail-label">Property</div><div>${repair.property_name || "-"}</div>
+                <div class="detail-label">Address</div><div>${repair.address || "-"}</div>
+                <div class="detail-label">Unit</div><div>${repair.unit_number || "-"}</div>
+                <div class="detail-label">Description</div><div>${repair.description || "-"}</div>
+                <div class="detail-label">Priority</div><div>${repair.priority || "-"}</div>
+                <div class="detail-label">Status</div><div>${repair.status || "-"}</div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <div class="detail-title">Tenant / Contact</div>
+            <div class="detail-grid">
+                <div class="detail-label">Contact Name</div><div>${repair.contact_name || "-"}</div>
+                <div class="detail-label">Designation</div><div>${repair.designation || "-"}</div>
+                <div class="detail-label">Phone</div><div>${repair.contact_phone || "-"}</div>
+                <div class="detail-label">Availability Date</div><div>${repair.availability_date || "-"}</div>
+                <div class="detail-label">Availability Time</div><div>${repair.availability_time || "-"}</div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <div class="detail-title">Workflow</div>
+            <div class="detail-grid">
+                <div class="detail-label">Technician</div><div>${repair.technician || "-"}</div>
+                <div class="detail-label">Response</div><div>${repair.response || "-"}</div>
+                <div class="detail-label">Confirmed Time</div><div>${repair.confirmed_time || "-"}</div>
+                <div class="detail-label">Visit Confirmed</div><div>${repair.visit_confirmed || "-"}</div>
+                <div class="detail-label">Visit Time</div><div>${repair.visit_time || "-"}</div>
+                <div class="detail-label">Visit Notes</div><div>${repair.visit_notes || "-"}</div>
+               <div class="detail-label">Quote Amount</div>
+                <div>${repair.quotation_amount ? "$" + repair.quotation_amount : "-"}</div>
+
+                <div class="detail-label">Quote Notes</div>
+                <div>${repair.quotation_notes || "-"}</div>
+                <div class="detail-label">Quote File</div>
+                <div>${repair.quotation_file ? `<a href="${repair.quotation_file}" download>Download Quote</a>` : "--"}</div>
+
+                <div class="detail-label">Quote Status</div>
+                <div>${repair.quotation_status || "Pending / Not decided"}</div>
+
+                <div class="detail-label">Landlord Notes</div>
+                <div>
+                <textarea id="landlord-notes-${repair.repair_id}" placeholder="Add landlord notes...">${repair.landlord_notes || ""}</textarea>
+                </div>
+
+                <div class="detail-label">Landlord Decision</div>
+                <div style="margin-top:10px;">
+                    <button type="button" onclick="saveQuoteDecision('${repair.repair_id}', 'Approved')">Approve Quote</button>
+                    <button type="button" onclick="saveQuoteDecision('${repair.repair_id}', 'Declined')">Decline Quote</button>
+                </div>
+
+        <div class="detail-section">
+            <div class="detail-title">Photo</div>
+            <div>${photoHtml}</div>
+        </div>
+
+        <div class="detail-section">
+            <div class="detail-title">Full History</div>
+            <div>${historyHtml}</div>
+    </div>
+`;
+
+document.getElementById("modal").style.display = "block";
+}
+function closeModal() {
+    document.getElementById("modal").style.display = "none";
+}
+window.onclick = function(event) {
+    const modal = document.getElementById("modal");
+    if (event.target === modal) {
+        closeModal();
+    }
+}
+        async function saveQuoteDecision(repairId, decision) {
+            const landlord_notes = document.getElementById(`landlord-notes-${repairId}`).value;
+
+            try {
+                const res = await fetch(`http://localhost:3000/repairs/${repairId}/quote-decision`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ decision, landlord_notes })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.message || "Error saving quote decision");
+                }
+
+                alert(data.message || `Quotation ${decision.toLowerCase()} successfully`);
+                closeModal();
+
+                try {
+                    await loadRepairs();
+                } catch (refreshError) {
+                    console.error("Refresh error:", refreshError);
+                }
+
+            } catch (error) {
+                console.error("Error saving quote decision:", error);
+                alert(error.message || "Error saving quote decision");
+            }
+    }
+
+async function updateStatus(id, status) {
+    try {
+        await fetch(`http://localhost:3000/repairs/${id}/status`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status })
+        });
+        await loadRepairs();
+    } catch (error) {
+        console.error("Error updating status:", error);
+    }
+}
+
+async function updateTechnician(id, technician) {
+    try {
+        await fetch(`http://localhost:3000/repairs/${id}/technician`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ technician })
+        });
+        await loadRepairs();
+    } catch (error) {
+        console.error("Error updating technician:", error);
+    }
+}
+
+function applyFilters() {
+    let filtered = [...repairs];
+
+    if (currentPriorityFilter === "High") {
+        filtered = filtered.filter(r => r.priority === "High");
+    } else if (currentPriorityFilter === "New") {
+        filtered = filtered.filter(r => (r.status || "New") === "New");
+    } else if (currentPriorityFilter === "Completed") {
+        filtered = filtered.filter(r => r.status === "Completed");
+    }
+
+    if (currentPropertyFilter !== "all") {
+        filtered = filtered.filter(r => r.property_name === currentPropertyFilter);
+    }
+
+    renderRepairs(filtered);
+}
+
+function setPriorityFilter(type) {
+    currentPriorityFilter = type;
+    applyFilters();
+}
+
+function setPropertyFilter(propertyName) {
+    currentPropertyFilter = propertyName;
+    applyFilters();
+}
+
+async function initDashboard() {
+    await loadSuppliers();
+    await loadRepairs();
+}
+async function approveQuote(repairId) {
+    const note = prompt("Optional note for technician:", "");
+
+    try {
+        await fetch(`http://localhost:3000/repairs/${repairId}/quotation-decision`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                quotation_status: "Approved",
+                landlord_notes: note || "",
+                status: "In Progress"
+            })
+        });
+
+        await loadRepairs();
+        openModal(repairId);
+
+    } catch (error) {
+        console.error("Error approving quote:", error);
+    }
+}
+
+async function declineQuote(repairId) {
+    const note = prompt("Reason for declining quote:", "");
+    
+    try {
+        await fetch(`http://localhost:3000/repairs/${repairId}/quotation-decision`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+            quotation_status: "Declined",
+            landlord_notes: note || "",
+            status: "New"
+})
+        });
+
+        await loadRepairs();
+        openModal(repairId);
+    } catch (error) {
+        console.error("Error declining quote:", error);
+    }
+}
+initDashboard();
+
+</script>
+</body>
+</html>

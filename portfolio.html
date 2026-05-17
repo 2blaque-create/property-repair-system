@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Portfolio Overview</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .summary-bar {
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 16px;
+            width: 260px;
+            background: #f9f9f9;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+
+        .high {
+            border-left: 6px solid #c0392b;
+        }
+
+        .medium {
+            border-left: 6px solid #f39c12;
+        }
+
+        .normal {
+            border-left: 6px solid #27ae60;
+        }
+
+        .overdue-box {
+            margin-top: 25px;
+            padding: 12px;
+            border: 1px solid #c0392b;
+            background: #fdecea;
+            border-radius: 8px;
+        }
+
+        .property-row {
+            margin-bottom: 8px;
+        }
+
+        a.button-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 6px 10px;
+            text-decoration: none;
+            border: 1px solid #3498db;
+            border-radius: 4px;
+            color: #3498db;
+            background: white;
+        }
+
+        a.button-link:hover {
+            background: #3498db;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Portfolio Overview</h1>
+
+    <div id="summaryBar" class="summary-bar">
+        Loading portfolio summary...
+    </div>
+
+    <div style="margin-bottom:20px;">
+        <a class="button-link" href="dashboard.html">Open Full Dashboard</a>
+    </div>
+
+    <div id="propertyCards" class="cards"></div>
+
+    <div class="overdue-box">
+        <strong>Overdue Repairs Across Portfolio</strong>
+        <div id="overdueList" style="margin-top:10px;">Loading overdue repairs...</div>
+    </div>
+
+    <script>
+        let repairs = [];
+
+        function getDueHours(priority) {
+            if (priority === "High") return 24;
+            if (priority === "Medium") return 48;
+            return 72;
+        }
+
+        function isOverdue(repair) {
+            if (!repair.submitted_at || repair.status === "Completed") return false;
+
+            const submitted = new Date(repair.submitted_at);
+            const now = new Date();
+            const hoursOpen = (now - submitted) / (1000 * 60 * 60);
+            const dueHours = getDueHours(repair.priority);
+
+            return hoursOpen > dueHours;
+        }
+
+        function buildSummary() {
+            const total = repairs.length;
+            const high = repairs.filter(r => r.priority === "High").length;
+            const overdue = repairs.filter(r => isOverdue(r)).length;
+            const completed = repairs.filter(r => r.status === "Completed").length;
+
+            document.getElementById("summaryBar").innerText =
+                `Total Repairs: ${total} | High Priority: ${high} | Overdue: ${overdue} | Completed: ${completed}`;
+        }
+
+        function openPropertyDashboard(propertyName) {
+            const url = `dashboard.html?property=${encodeURIComponent(propertyName)}`;
+            window.location.href = url;
+        }
+
+        function buildPropertyCards() {
+            const container = document.getElementById("propertyCards");
+            container.innerHTML = "";
+
+            const propertyMap = {};
+
+            repairs.forEach(r => {
+                const property = r.property_name || "Unknown Property";
+
+                if (!propertyMap[property]) {
+                    propertyMap[property] = {
+                        total: 0,
+                        high: 0,
+                        overdue: 0,
+                        completed: 0
+                    };
+                }
+
+                propertyMap[property].total += 1;
+                if (r.priority === "High") propertyMap[property].high += 1;
+                if (isOverdue(r)) propertyMap[property].overdue += 1;
+                if (r.status === "Completed") propertyMap[property].completed += 1;
+            });
+
+            Object.entries(propertyMap).forEach(([property, stats]) => {
+                let cardClass = "normal";
+                if (stats.overdue > 0 || stats.high > 0) cardClass = "high";
+                else if (stats.total > 0) cardClass = "medium";
+
+                const card = document.createElement("div");
+                card.className = `card ${cardClass}`;
+                card.onclick = () => openPropertyDashboard(property);
+
+                card.innerHTML = `
+                    <h3>${property}</h3>
+                    <div class="property-row"><strong>Total Repairs:</strong> ${stats.total}</div>
+                    <div class="property-row"><strong>High Priority:</strong> ${stats.high}</div>
+                    <div class="property-row"><strong>Overdue:</strong> ${stats.overdue}</div>
+                    <div class="property-row"><strong>Completed:</strong> ${stats.completed}</div>
+                    <div style="margin-top:12px; color:#3498db;"><strong>Open property dashboard →</strong></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function buildOverdueList() {
+            const overdue = repairs.filter(r => isOverdue(r));
+            const container = document.getElementById("overdueList");
+
+            if (overdue.length === 0) {
+                container.innerHTML = "No overdue repairs.";
+                return;
+            }
+
+            container.innerHTML = overdue.map(r => {
+                const submitted = new Date(r.submitted_at);
+                const now = new Date();
+                const hoursOpen = Math.floor((now - submitted) / (1000 * 60 * 60));
+
+                return `
+                    <div style="margin-bottom:10px;">
+                        ⚠ <strong>${r.property_name}</strong> - Unit ${r.unit_number}<br>
+                        ${r.description}<br>
+                        Priority: ${r.priority} | Open for: ${hoursOpen} hours
+                    </div>
+                `;
+            }).join("");
+        }
+
+        async function loadRepairs() {
+            try {
+                const res = await fetch("http://localhost:3000/repairs");
+                repairs = await res.json();
+
+                buildSummary();
+                buildPropertyCards();
+                buildOverdueList();
+            } catch (error) {
+                console.error("Error loading portfolio:", error);
+                document.getElementById("summaryBar").innerText = "Error loading portfolio data.";
+            }
+        }
+
+        loadRepairs();
+    </script>
+
+</body>
+</html>

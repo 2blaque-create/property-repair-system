@@ -1,0 +1,8 @@
+[
+  { "name": "Unassigned", "trade": "", "active": false },
+  { "name": "AquaFlow Plumbing", "trade": "Plumbing", "active": true },
+  { "name": "Moyo Plumbing", "trade": "Plumbing", "active": true },
+  { "name": "Bright Spark Electrical", "trade": "Electrical", "active": true },
+  { "name": "FixPro Handyman", "trade": "Handyman", "active": true },
+  { "name": "BuildRight Maintenance", "trade": "General Maintenance", "active": true }
+]

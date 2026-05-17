@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Suppliers Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f7f7f7;
+      color: #222;
+    }
+
+    h1, h2 {
+      margin-bottom: 16px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Suppliers Dashboard</h1>
+
+  <div class="card">
+    <h2>Add Supplier</h2>
+    <form id="supplierForm">
+      <div class="grid">
+        <div>
+          <label for="name">Supplier Name</label>
+          <input type="text" id="name" required />
+        </div>
+
+        <div>
+          <label for="trade">Trade</label>
+          <select id="trade" required>
+            <option value="">Select trade</option>
+            <option value="plumbing">Plumbing</option>
+            <option value="electrical">Electrical</option>
+            <option value="general_maintenance">General Maintenance</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="phone">WhatsApp Number</label>
+          <input type="text" id="phone" placeholder="whatsapp:+2637..." required />
+        </div>
+
+        <div>
+          <label for="contact_person">Contact Person</label>
+          <input type="text" id="contact_person" />
+        </div>
+
+        <div>
+          <label for="active">Status</label>
+          <select id="active">
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit">Save Supplier</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Suppliers List</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Trade</th>
+          <th>Phone</th>
+          <th>Contact Person</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="suppliersTableBody"></tbody>
+    </table>
+  </div>
+
+  <script>
+    async function loadSuppliers() {
+      try {
+        const res = await fetch("http://localhost:3000/suppliers");
+        const suppliers = await res.json();
+
+        const tbody = document.getElementById("suppliersTableBody");
+        tbody.innerHTML = "";
+
+        suppliers.forEach((supplier) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${supplier.name || ""}</td>
+            <td>${supplier.trade || ""}</td>
+            <td>${supplier.phone || ""}</td>
+            <td>${supplier.contact_person || ""}</td>
+            <td>${supplier.active ? "Active" : "Inactive"}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      } catch (error) {
+        console.error("Error loading suppliers:", error);
+        alert("Failed to load suppliers");
+      }
+    }
+
+    document.getElementById("supplierForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const supplier = {
+        name: document.getElementById("name").value.trim(),
+        trade: document.getElementById("trade").value,
+        phone: document.getElementById("phone").value.trim(),
+        contact_person: document.getElementById("contact_person").value.trim(),
+        active: document.getElementById("active").value === "true"
+      };
+
+      try {
+        const res = await fetch("http://localhost:3000/suppliers", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(supplier)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || "Failed to save supplier");
+        }
+
+        alert("Supplier saved successfully");
+        document.getElementById("supplierForm").reset();
+        loadSuppliers();
+      } catch (error) {
+        console.error("Error saving supplier:", error);
+        alert(error.message || "Failed to save supplier");
+      }
+    });
+
+    loadSuppliers();
+  </script>
+</body>
+</html>

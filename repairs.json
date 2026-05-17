@@ -1,0 +1,702 @@
+[
+  {
+    "repair_id": "R1773692795634",
+    "property_type": "Complex",
+    "property_name": "Rossal Park ",
+    "address": "14 Rossal Park road ",
+    "unit_number": "14",
+    "description": "leak",
+    "priority": "High",
+    "availability_date": "2026-03-17",
+    "availability_time": "13:00",
+    "people": {
+      "tenant": {
+        "name": "Tenant Name",
+        "phone": "+263773402513"
+      },
+      "caretaker": {
+        "name": "Dexter",
+        "phone": "+263776929535"
+      },
+      "landlord": {
+        "name": "Owner Name",
+        "phone": "+263772376938"
+      }
+    },
+    "photo": "/uploads/1773692795604_IMG_1551.jpeg",
+    "status": "Completed",
+    "submitted_at": "2026-03-16T20:26:35.634Z",
+    "technician": "AquaFlow Plumbing",
+    "history": [
+      {
+        "action": "Assigned to Plumber",
+        "timestamp": "2026-03-17T19:38:17.267Z"
+      },
+      {
+        "action": "Status changed to Assigned",
+        "timestamp": "2026-03-17T19:48:24.254Z"
+      },
+      {
+        "action": "Assigned to AquaFlow Plumbing",
+        "timestamp": "2026-03-17T19:48:33.542Z"
+      },
+      {
+        "action": "Technician response: Accepted",
+        "timestamp": "2026-03-18T18:56:57.510Z"
+      },
+      {
+        "action": "Confirmed time: 1300",
+        "timestamp": "2026-03-18T18:56:57.510Z"
+      },
+      {
+        "action": "Technician note added",
+        "timestamp": "2026-03-18T18:56:57.510Z"
+      },
+      {
+        "action": "Technician response: Accepted",
+        "timestamp": "2026-03-18T18:56:59.474Z"
+      },
+      {
+        "action": "Confirmed time: 1300",
+        "timestamp": "2026-03-18T18:56:59.474Z"
+      },
+      {
+        "action": "Technician note added",
+        "timestamp": "2026-03-18T18:56:59.474Z"
+      },
+      {
+        "action": "Technician response: Accepted",
+        "timestamp": "2026-03-18T18:57:01.675Z"
+      },
+      {
+        "action": "Confirmed time: 1300",
+        "timestamp": "2026-03-18T18:57:01.675Z"
+      },
+      {
+        "action": "Technician note added",
+        "timestamp": "2026-03-18T18:57:01.675Z"
+      },
+      {
+        "action": "Visit status: Visited",
+        "timestamp": "2026-03-21T06:58:51.858Z"
+      },
+      {
+        "action": "Visit time: 1300hrs",
+        "timestamp": "2026-03-21T06:58:51.858Z"
+      },
+      {
+        "action": "Visit note added",
+        "timestamp": "2026-03-21T06:58:51.858Z"
+      },
+      {
+        "action": "Quotation submitted: 430",
+        "timestamp": "2026-03-21T06:59:37.580Z"
+      },
+      {
+        "action": "Quotation note added",
+        "timestamp": "2026-03-21T06:59:37.580Z"
+      },
+      {
+        "action": "Quotation status: Pending Approval",
+        "timestamp": "2026-03-21T06:59:37.580Z"
+      },
+      {
+        "action": "Quotation submitted: 430",
+        "timestamp": "2026-03-21T06:59:44.377Z"
+      },
+      {
+        "action": "Quotation note added",
+        "timestamp": "2026-03-21T06:59:44.377Z"
+      },
+      {
+        "action": "Quotation status: Pending Approval",
+        "timestamp": "2026-03-21T06:59:44.377Z"
+      },
+      {
+        "action": "Quotation submitted (£430)",
+        "timestamp": "2026-03-21T07:14:40.344Z"
+      },
+      {
+        "action": "Quotation submitted (£430)",
+        "timestamp": "2026-03-21T07:14:42.710Z"
+      },
+      {
+        "action": "Quotation submitted (£430)",
+        "timestamp": "2026-03-21T07:14:43.363Z"
+      },
+      {
+        "action": "Quotation submitted (£430)",
+        "timestamp": "2026-03-21T07:14:43.827Z"
+      },
+      {
+        "action": "Quotation submitted ($430)",
+        "timestamp": "2026-03-23T19:17:02.200Z"
+      },
+      {
+        "action": "Quotation submitted ($430)",
+        "timestamp": "2026-03-23T19:17:10.423Z"
+      },
+      {
+        "action": "Quotation file uploaded",
+        "timestamp": "2026-03-23T19:38:58.941Z"
+      },
+      {
+        "action": "Quotation submitted ($430)",
+        "timestamp": "2026-03-23T19:38:58.942Z"
+      },
+      {
+        "action": "Quotation file uploaded",
+        "timestamp": "2026-03-23T19:39:09.725Z"
+      },
+      {
+        "action": "Quotation submitted ($430)",
+        "timestamp": "2026-03-23T19:39:09.725Z"
+      },
+      {
+        "action": "Quotation file uploaded",
+        "timestamp": "2026-03-23T19:50:26.700Z"
+      },
+      {
+        "action": "Quotation submitted ($430)",
+        "timestamp": "2026-03-23T19:50:26.700Z"
+      },
+      {
+        "action": "Quotation file uploaded",
+        "timestamp": "2026-03-24T11:46:53.672Z"
+      },
+      {
+        "action": "Quotation submitted ($430)",
+        "timestamp": "2026-03-24T11:46:53.672Z"
+      },
+      {
+        "action": "Quotation file uploaded",
+        "timestamp": "2026-03-24T19:56:55.208Z"
+      },
+      {
+        "action": "Quotation submitted ($430)",
+        "timestamp": "2026-03-24T19:56:55.208Z"
+      },
+      {
+        "action": "Quotation file uploaded",
+        "timestamp": "2026-03-24T20:04:40.745Z"
+      },
+      {
+        "action": "Quotation submitted ($430)",
+        "timestamp": "2026-03-24T20:04:40.745Z"
+      },
+      {
+        "action": "Quotation file uploaded",
+        "timestamp": "2026-03-24T20:13:13.388Z"
+      },
+      {
+        "action": "Quotation submitted ($430)",
+        "timestamp": "2026-03-24T20:13:13.388Z"
+      },
+      {
+        "action": "Quotation file uploaded",
+        "timestamp": "2026-03-24T20:15:12.638Z"
+      },
+      {
+        "action": "Quotation submitted ($430)",
+        "timestamp": "2026-03-24T20:15:12.638Z"
+      },
+      {
+        "action": "Quotation file uploaded",
+        "timestamp": "2026-03-24T20:57:43.106Z"
+      },
+      {
+        "action": "Quotation submitted ($430)",
+        "timestamp": "2026-03-24T20:57:43.106Z"
+      },
+      {
+        "action": "Quotation file uploaded",
+        "timestamp": "2026-03-24T21:01:33.442Z"
+      },
+      {
+        "action": "Quotation submitted ($430)",
+        "timestamp": "2026-03-24T21:01:33.442Z"
+      },
+      {
+        "action": "Quotation file uploaded",
+        "timestamp": "2026-03-24T21:17:25.684Z"
+      },
+      {
+        "action": "Quotation submitted ($430)",
+        "timestamp": "2026-03-24T21:17:25.691Z"
+      },
+      {
+        "action": "Quotation approved by landlord",
+        "timestamp": "2026-03-25T21:15:34.992Z"
+      },
+      {
+        "action": "Quotation approved by landlord",
+        "timestamp": "2026-03-25T21:16:56.084Z"
+      },
+      {
+        "action": "Quotation approved by landlord",
+        "timestamp": "2026-03-25T21:26:21.721Z"
+      },
+      {
+        "action": "Quotation approved by landlord",
+        "timestamp": "2026-03-26T17:19:16.072Z"
+      },
+      {
+        "action": "Quotation approved by landlord. Notes: happy with the quotation",
+        "timestamp": "2026-03-29T13:57:34.064Z"
+      },
+      {
+        "action": "Quotation approved by landlord. Notes: happy with the quotation",
+        "timestamp": "2026-03-29T14:04:04.765Z"
+      },
+      {
+        "action": "Quotation approved by landlord. Notes: happy with the quotation",
+        "timestamp": "2026-03-29T14:13:43.556Z"
+      },
+      {
+        "action": "Quotation approved by landlord. Notes: happy with the quotation",
+        "timestamp": "2026-03-29T14:18:03.730Z"
+      },
+      {
+        "action": "Quotation approved by landlord. Notes: happy with the quotation",
+        "timestamp": "2026-04-01T18:52:59.842Z"
+      },
+      {
+        "action": "Quotation approved by landlord. Notes: happy with the quotation",
+        "timestamp": "2026-04-01T18:59:13.753Z"
+      },
+      {
+        "action": "Quotation approved by landlord. Notes: happy with the quotation",
+        "timestamp": "2026-04-01T20:24:19.272Z"
+      },
+      {
+        "action": "Quotation approved by landlord. Notes: happy with the quotation",
+        "timestamp": "2026-04-01T20:44:31.271Z"
+      },
+      {
+        "action": "Quotation approved by landlord. Notes: happy with the quotation",
+        "timestamp": "2026-04-01T20:50:03.799Z"
+      },
+      {
+        "action": "Quotation approved by landlord. Notes: happy with the quotation",
+        "timestamp": "2026-04-07T12:16:36.394Z"
+      },
+      {
+        "action": "Technician response: Accepted",
+        "timestamp": "2026-04-14T19:52:46.582Z"
+      },
+      {
+        "action": "Technician response: Accepted",
+        "timestamp": "2026-04-25T15:39:19.679Z"
+      },
+      {
+        "action": "Technician response: Declined",
+        "timestamp": "2026-04-25T15:43:21.561Z"
+      },
+      {
+        "action": "Technician proposed time: 14:00",
+        "timestamp": "2026-04-25T15:45:21.001Z"
+      },
+      {
+        "action": "Technician marked repair complete",
+        "timestamp": "2026-04-26T15:06:03.906Z"
+      }
+    ],
+    "response": "Declined",
+    "confirmed_time": "14:00",
+    "technician_notes": "Please advise the tenant to shut off the water to the sink for now ",
+    "visit_confirmed": "Visited",
+    "visit_time": "1300hrs",
+    "visit_notes": "Galvanised pipes need to be replaced ",
+    "quotation_amount": "430",
+    "quotation_notes": "Replacing pipes with pvc pipes labour,fix and supply ",
+    "quotation_status": "Approved",
+    "quotation_file": "/uploads/1774387045669-QUOTATION.pdf",
+    "landlord_notes": "happy with the quotation",
+    "accepted_at": "2026-04-25T15:39:19.673Z",
+    "declined_at": "2026-04-25T15:43:21.559Z",
+    "completed_at": "2026-04-26T15:06:03.900Z",
+    "completion": {
+      "confirmed": true,
+      "invoice_file": "",
+      "completion_photo": ""
+    }
+  },
+  {
+    "repair_id": "R1773693342538",
+    "property_type": "Complex",
+    "property_name": "Heights",
+    "address": "23 High place ",
+    "unit_number": "14",
+    "description": "leak ",
+    "priority": "Medium",
+    "availability_date": "2026-03-17",
+    "availability_time": "14:00",
+    "contact_name": "Dexter ",
+    "designation": "Caretaker ",
+    "contact_phone": "7446020065",
+    "photo": "/uploads/1773693342498_IMG_1548.jpeg",
+    "status": "Assigned",
+    "submitted_at": "2026-03-16T20:35:42.538Z",
+    "technician": "Moyo Plumbing",
+    "history": [
+      {
+        "action": "Assigned to AquaFlow Plumbing",
+        "timestamp": "2026-03-17T20:08:10.515Z"
+      },
+      {
+        "action": "Assigned to Moyo Plumbing",
+        "timestamp": "2026-03-17T20:08:13.424Z"
+      },
+      {
+        "action": "Status changed to Assigned",
+        "timestamp": "2026-03-17T20:08:16.132Z"
+      },
+      {
+        "action": "Assigned to Moyo Plumbing",
+        "timestamp": "2026-03-18T19:49:52.686Z"
+      },
+      {
+        "action": "Assigned to Moyo Plumbing",
+        "timestamp": "2026-03-18T19:49:53.629Z"
+      }
+    ],
+    "response": "",
+    "confirmed_time": "",
+    "technician_notes": "",
+    "visit_confirmed": "",
+    "visit_time": "",
+    "visit_notes": "",
+    "quotation_amount": "",
+    "quotation_notes": "",
+    "quotation_status": "",
+    "landlord_notes": ""
+  },
+  {
+    "repair_id": "R1773693411187",
+    "property_type": "Complex",
+    "property_name": "Miami",
+    "address": "43 Collins avenue ",
+    "unit_number": "123",
+    "description": "leak",
+    "priority": "Low",
+    "availability_date": "2026-03-18",
+    "availability_time": "15:00",
+    "contact_name": "Dexter ",
+    "designation": "Caretaker ",
+    "contact_phone": "7446020065",
+    "photo": "/uploads/1773693411183_IMG_1549.jpeg",
+    "status": "Assigned",
+    "submitted_at": "2026-03-16T20:36:51.187Z",
+    "technician": "Bright Spark Electrical",
+    "history": [
+      {
+        "action": "Assigned to Bright Spark Electrical",
+        "timestamp": "2026-03-17T20:08:20.893Z"
+      },
+      {
+        "action": "Status changed to Assigned",
+        "timestamp": "2026-03-17T20:08:23.677Z"
+      }
+    ]
+  },
+  {
+    "repair_id": "R1775250812181",
+    "property_type": "Complex",
+    "property_name": "Rossal Park ",
+    "address": "15 Rossal Road ",
+    "unit_number": "2",
+    "description": "Lights not working ",
+    "trade": "electrical",
+    "priority": "Medium",
+    "availability_date": "2026-04-03",
+    "availability_time": "12:00",
+    "contact_name": "denis",
+    "designation": "caretaker ",
+    "contact_phone": "+26377402513",
+    "photo": null,
+    "technician": "Bright Spark Electrical",
+    "status": "Assigned",
+    "submitted_at": "2026-04-03T21:13:32.181Z",
+    "response": "",
+    "confirmed_time": "",
+    "technician_notes": "",
+    "visit_confirmed": "",
+    "visit_time": "",
+    "visit_notes": "",
+    "quotation_amount": "",
+    "quotation_notes": "",
+    "quotation_status": "",
+    "landlord_notes": "",
+    "history": [
+      {
+        "action": "Repair submitted",
+        "timestamp": "2026-04-03T21:13:32.183Z"
+      },
+      {
+        "action": "Assigned to Bright Spark Electrical",
+        "timestamp": "2026-04-03T21:26:42.920Z"
+      },
+      {
+        "action": "Status changed to Assigned",
+        "timestamp": "2026-04-03T21:26:47.779Z"
+      },
+      {
+        "action": "Assigned to Unassigned",
+        "timestamp": "2026-04-03T21:28:32.514Z"
+      },
+      {
+        "action": "Status changed to New",
+        "timestamp": "2026-04-03T21:28:37.845Z"
+      }
+    ]
+  },
+  {
+    "repair_id": "R1775251509114",
+    "property_type": "Complex",
+    "property_name": "Rossal Park ",
+    "address": "15 Rossal Road ",
+    "unit_number": "2",
+    "description": "Lights keep flashing ",
+    "trade": "electrical",
+    "priority": "Medium",
+    "availability_date": "2026-04-04",
+    "availability_time": "12:00",
+    "contact_name": "denis",
+    "designation": "caretaker ",
+    "contact_phone": "+26377402513",
+    "photo": null,
+    "technician": "Bright Spark Electrical",
+    "status": "Assigned",
+    "submitted_at": "2026-04-03T21:25:09.114Z",
+    "response": "",
+    "confirmed_time": "",
+    "technician_notes": "",
+    "visit_confirmed": "",
+    "visit_time": "",
+    "visit_notes": "",
+    "quotation_amount": "",
+    "quotation_notes": "",
+    "quotation_status": "",
+    "landlord_notes": "",
+    "history": [
+      {
+        "action": "Repair submitted",
+        "timestamp": "2026-04-03T21:25:09.122Z"
+      }
+    ]
+  },
+  {
+    "repair_id": "R1775322937487",
+    "property_type": "Complex",
+    "property_name": "Greenwood Villas ",
+    "address": "2 8th street, Avenues ",
+    "unit_number": "23",
+    "description": "Cabinet door broken ",
+    "trade": "general_maintenance",
+    "priority": "Low",
+    "availability_date": "2026-04-11",
+    "availability_time": "01:21",
+    "contact_name": "Elvis ",
+    "designation": "caretaker ",
+    "contact_phone": "+26377402513",
+    "photo": null,
+    "technician": "Unassigned",
+    "status": "New",
+    "submitted_at": "2026-04-04T17:15:37.487Z",
+    "response": "",
+    "confirmed_time": "",
+    "technician_notes": "",
+    "visit_confirmed": "",
+    "visit_time": "",
+    "visit_notes": "",
+    "quotation_amount": "",
+    "quotation_notes": "",
+    "quotation_status": "",
+    "landlord_notes": "",
+    "history": [
+      {
+        "action": "Repair submitted",
+        "timestamp": "2026-04-04T17:15:37.497Z"
+      }
+    ]
+  },
+  {
+    "repair_id": "R1775323707693",
+    "property_type": "Complex",
+    "property_name": "Greenwood Villas",
+    "address": "15 8th street Avenues",
+    "unit_number": "2",
+    "description": "Cabinet doors need attention ",
+    "trade": "general_maintenance",
+    "priority": "Low",
+    "availability_date": "2026-04-07",
+    "availability_time": "08:00",
+    "contact_name": "denis",
+    "designation": "caretaker ",
+    "contact_phone": "+26377402513",
+    "photo": null,
+    "technician": "Unassigned",
+    "status": "New",
+    "submitted_at": "2026-04-04T17:28:27.693Z",
+    "response": "",
+    "confirmed_time": "",
+    "technician_notes": "",
+    "visit_confirmed": "",
+    "visit_time": "",
+    "visit_notes": "",
+    "quotation_amount": "",
+    "quotation_notes": "",
+    "quotation_status": "",
+    "landlord_notes": "",
+    "history": [
+      {
+        "action": "Repair submitted",
+        "timestamp": "2026-04-04T17:28:27.704Z"
+      }
+    ]
+  },
+  {
+    "repair_id": "R1775324252635",
+    "property_type": "Complex",
+    "property_name": "Wingate Mews ",
+    "address": "37 Wingate, Highlands",
+    "unit_number": "2",
+    "description": "Plugs not working ",
+    "trade": "electrical",
+    "priority": "High",
+    "availability_date": "2026-04-05",
+    "availability_time": "08:00",
+    "contact_name": "denis",
+    "designation": "caretaker ",
+    "contact_phone": "+26377402513",
+    "photo": null,
+    "technician": "Unassigned",
+    "status": "New",
+    "submitted_at": "2026-04-04T17:37:32.635Z",
+    "response": "",
+    "confirmed_time": "",
+    "technician_notes": "",
+    "visit_confirmed": "",
+    "visit_time": "",
+    "visit_notes": "",
+    "quotation_amount": "",
+    "quotation_notes": "",
+    "quotation_status": "",
+    "landlord_notes": "",
+    "history": [
+      {
+        "action": "Repair submitted",
+        "timestamp": "2026-04-04T17:37:32.645Z"
+      }
+    ]
+  },
+  {
+    "repair_id": "R1775328847422",
+    "property_type": "Complex",
+    "property_name": "Wingate Mews ",
+    "address": "37 Wingate ",
+    "unit_number": "2",
+    "description": "Leak in bathroom ",
+    "trade": "plumbing",
+    "priority": "High",
+    "availability_date": "2026-04-05",
+    "availability_time": "01:00",
+    "contact_name": "denis",
+    "designation": "caretaker ",
+    "contact_phone": "+26377402513",
+    "photo": null,
+    "technician": "AquaFlow Plumbing",
+    "status": "Assigned",
+    "submitted_at": "2026-04-04T18:54:07.422Z",
+    "response": "",
+    "confirmed_time": "",
+    "technician_notes": "",
+    "visit_confirmed": "",
+    "visit_time": "",
+    "visit_notes": "",
+    "quotation_amount": "",
+    "quotation_notes": "",
+    "quotation_status": "",
+    "landlord_notes": "",
+    "history": [
+      {
+        "action": "Repair submitted",
+        "timestamp": "2026-04-04T18:54:07.506Z"
+      }
+    ]
+  },
+  {
+    "repair_id": "R1775330407361",
+    "property_type": "Complex",
+    "property_name": "Lavender Gardens ",
+    "address": "20 Montgomery road",
+    "unit_number": "2",
+    "description": "Geyser not heating ",
+    "trade": "electrical",
+    "priority": "High",
+    "availability_date": "2026-04-05",
+    "availability_time": "01:30",
+    "contact_name": "denis",
+    "designation": "caretaker ",
+    "contact_phone": "+26377402513",
+    "photo": null,
+    "technician": "Bright Spark Electrical",
+    "status": "Accepted",
+    "submitted_at": "2026-04-04T19:20:07.361Z",
+    "response": "Accepted",
+    "confirmed_time": "14:00",
+    "technician_notes": "Need ladder",
+    "visit_confirmed": "",
+    "visit_time": "",
+    "visit_notes": "",
+    "quotation_amount": "",
+    "quotation_notes": "",
+    "quotation_status": "",
+    "landlord_notes": "",
+    "history": [
+      {
+        "action": "Repair submitted",
+        "timestamp": "2026-04-04T19:20:07.467Z"
+      },
+      {
+        "action": "Technician response: Accepted",
+        "timestamp": "2026-04-05T20:23:48.019Z"
+      },
+      {
+        "action": "Technician response: Accepted",
+        "timestamp": "2026-04-06T17:15:48.021Z"
+      },
+      {
+        "action": "Technician response: Accepted",
+        "timestamp": "2026-04-06T17:22:55.484Z"
+      },
+      {
+        "action": "Technician response: Accepted",
+        "timestamp": "2026-04-06T17:24:51.440Z"
+      },
+      {
+        "action": "Technician response: Accepted",
+        "timestamp": "2026-04-06T18:06:54.494Z"
+      },
+      {
+        "action": "Technician note: Need ladder",
+        "timestamp": "2026-04-06T18:07:24.633Z"
+      },
+      {
+        "action": "Technician proposed time: 14:00",
+        "timestamp": "2026-04-06T18:07:42.631Z"
+      },
+      {
+        "action": "Technician response: Accepted",
+        "timestamp": "2026-04-08T17:59:45.573Z"
+      }
+    ],
+    "accepted_at": "2026-04-08T17:59:45.565Z",
+    "completed_at": "",
+    "completion": {
+      "confirmed": false,
+      "invoice_file": "",
+      "completion_photo": ""
+    }
+  }
+]

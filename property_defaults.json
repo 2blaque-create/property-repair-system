@@ -1,0 +1,20 @@
+[
+  {
+    "property_name": "Rossal Park",
+    "plumbing": "AquaFlow Plumbing",
+    "electrical": "Bright Spark Electrical",
+    "general_maintenance": "BuildRight Maintenance"
+  },
+  {
+    "property_name": "Heights",
+    "plumbing": "Moyo Plumbing",
+    "electrical": "Bright Spark Electrical",
+    "general_maintenance": "FixPro Handyman"
+  },
+  {
+    "property_name": "Miami",
+    "plumbing": "AquaFlow Plumbing",
+    "electrical": "Bright Spark Electrical",
+    "general_maintenance": "FixPro Handyman"
+  }
+]

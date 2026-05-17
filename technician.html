@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Technician Jobs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .job {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+        }
+
+        .high { background: #ffdddd; }
+        .medium { background: #fff4cc; }
+        .low { background: #ddffdd; }
+
+        .deadline-box {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .deadline-safe {
+            background: #e8f8ef;
+            border: 1px solid #27ae60;
+            color: #145a32;
+        }
+
+        .deadline-warning {
+            background: #fff8d6;
+            border: 1px solid #f1c40f;
+            color: #8a6d00;
+        }
+
+        .deadline-overdue {
+            background: #fdecea;
+            border: 1px solid #c0392b;
+            color: #8a1f11;
+        }
+
+        img {
+            width: 100%;
+            max-width: 250px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        .section {
+            margin-top: 12px;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        select, input, textarea, button {
+            margin-top: 8px;
+            padding: 6px;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        textarea {
+            min-height: 80px;
+        }
+
+        .box {
+            margin-top: 12px;
+            padding: 12px;
+            border: 1px solid #bbb;
+            background: #f9f9f9;
+            border-radius: 6px;
+        }
+
+        .timeline {
+            margin-top: 10px;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .timeline li {
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .timeline-done {
+            background: #e8f8ef;
+            border-color: #27ae60;
+        }
+
+        .timeline-current {
+            background: #fff8d6;
+            border-color: #f1c40f;
+        }
+
+        .timeline-pending {
+            background: #f4f4f4;
+            color: #777;
+        }
+
+        .timeline-declined {
+            background: #fdecea;
+            border-color: #c0392b;
+        }
+
+        .progress-bar {
+            height: 18px;
+            background: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            min-width: 140px;
+            max-width: 320px;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            text-align: center;
+            color: white;
+            font-size: 12px;
+            line-height: 18px;
+        }
+
+        .progress-new { background: #777; }
+        .progress-assigned { background: #3498db; }
+        .progress-accepted { background: #16a085; }
+        .progress-visited { background: #e67e22; }
+        .progress-quote { background: #8e44ad; }
+        .progress-approved { background: #27ae60; }
+        .progress-completed { background: #145a32; }
+        .progress-declined { background: #c0392b; }
+    </style>
+</head>
+<body>
+
+    <h2 id="techName">Technician Jobs</h2>
+    <div id="jobs"></div>
+
+    <script>
+        const technician = new URLSearchParams(window.location.search).get("name");
+
+        document.getElementById("techName").innerText =
+            (technician || "Technician") + " – Assigned Repairs";
+
+        function calculateProgress(r) {
+            let percent = 10;
+            let stage = "progress-new";
+
+            if (r.status === "Assigned") {
+                percent = 30;
+                stage = "progress-assigned";
+            }
+
+            if (r.response === "Accepted") {
+                percent = 45;
+                stage = "progress-accepted";
+            }
+
+            if (r.visit_confirmed === "Visited") {
+                percent = 60;
+                stage = "progress-visited";
+            }
+
+            if (r.quotation_amount) {
+                percent = 75;
+                stage = "progress-quote";
+            }
+
+            if (r.quotation_status === "Approved" || r.status === "In Progress") {
+                percent = 90;
+                stage = "progress-approved";
+            }
+
+            if (r.status === "Completed") {
+                percent = 100;
+                stage = "progress-completed";
+            }
+
+            if (r.quotation_status === "Declined") {
+                percent = 100;
+                stage = "progress-declined";
+            }
+
+            return { percent, stage };
+        }
+
+        function getTimelineSteps(r) {
+            const steps = [
+                { label: "Submitted", done: true, current: false },
+                { label: "Assigned", done: r.status === "Assigned" || r.status === "In Progress" || r.status === "Completed" || (!!r.technician && r.technician !== "Unassigned"), current: false },
+                { label: "Accepted", done: r.response === "Accepted", current: false },
+                { label: "Visited", done: r.visit_confirmed === "Visited", current: false },
+                { label: "Quote Submitted", done: !!r.quotation_amount, current: false },
+                { label: "Approved", done: r.quotation_status === "Approved", current: false, declined: r.quotation_status === "Declined" },
+                { label: "Completed", done: r.status === "Completed", current: false }
+            ];
+
+            if (r.quotation_status === "Declined") {
+                steps[5].label = "Declined";
+                steps[5].declined = true;
+            }
+
+            const firstUndone = steps.findIndex(s => !s.done && !s.declined);
+            if (firstUndone !== -1) {
+                steps[firstUndone].current = true;
+            }
+
+            return steps;
+        }
+
+        function renderTimeline(r) {
+            const steps = getTimelineSteps(r);
+
+            return `
+                <ul class="timeline">
+                    ${steps.map(step => {
+                        let cls = "timeline-pending";
+                        let icon = "⚪";
+
+                        if (step.declined) {
+                            cls = "timeline-declined";
+                            icon = "❌";
+                        } else if (step.done) {
+                            cls = "timeline-done";
+                            icon = "✅";
+                        } else if (step.current) {
+                            cls = "timeline-current";
+                            icon = "⏳";
+                        }
+
+                        return `<li class="${cls}">${icon} ${step.label}</li>`;
+                    }).join("")}
+                </ul>
+            `;
+        }
+
+        function getDueHours(priority) {
+            if (priority === "High") return 24;
+            if (priority === "Medium") return 48;
+            return 72;
+        }
+
+        function getDeadlineInfo(r) {
+            if (!r.submitted_at || r.status === "Completed") {
+                return {
+                    label: "No active deadline",
+                    className: "deadline-safe"
+                };
+            }
+
+            const dueHours = getDueHours(r.priority);
+            const submitted = new Date(r.submitted_at);
+            const dueDate = new Date(submitted.getTime() + dueHours * 60 * 60 * 1000);
+            const now = new Date();
+
+            const hoursRemaining = Math.floor((dueDate - now) / (1000 * 60 * 60));
+            const hoursOpen = Math.floor((now - submitted) / (1000 * 60 * 60));
+
+            if (hoursRemaining < 0) {
+                return {
+                    label: `⚠ OVERDUE — Open for ${hoursOpen} hours | Due was ${dueDate.toLocaleString()}`,
+                    className: "deadline-overdue"
+                };
+            }
+
+            if (hoursRemaining <= 6) {
+                return {
+                    label: `Due soon — ${hoursRemaining} hours remaining | Due ${dueDate.toLocaleString()}`,
+                    className: "deadline-warning"
+                };
+            }
+
+            return {
+                label: `${hoursRemaining} hours remaining | Due ${dueDate.toLocaleString()}`,
+                className: "deadline-safe"
+            };
+        }
+
+        async function loadJobs() {
+            try {
+                const res = await fetch("http://localhost:3000/repairs");
+                const repairs = await res.json();
+
+               const jobs = repairs.filter(r =>
+                    (r.technician || "").trim().toLowerCase() === (technician || "").trim().toLowerCase() &&
+                    (r.status || "").trim().toLowerCase() !== "completed"
+                );      
+
+                console.log("technician from URL:", technician);
+                console.log("all repairs:", repairs);
+            console.log("filtered jobs:", jobs);
+
+renderJobs(jobs);
+             } catch (error) {
+                 console.error("Error loading jobs:", error);
+                 document.getElementById("jobs").innerHTML = "Error loading jobs";
+             }
+        }
+
+        function renderJobs(list) {
+            const container = document.getElementById("jobs");
+
+            if (list.length === 0) {
+                container.innerHTML = "No assigned repairs";
+                return;
+            }
+
+            container.innerHTML = list.map(r => {
+                let color = "low";
+                if (r.priority === "High") color = "high";
+                if (r.priority === "Medium") color = "medium";
+
+                const progress = calculateProgress(r);
+                const deadline = getDeadlineInfo(r);
+
+                return `
+                    <div class="job ${color}">
+                        <div><strong>${r.property_name}</strong> – Unit ${r.unit_number}</div>
+
+                        <div class="section"><span class="label">Issue:</span> ${r.description}</div>
+                        <div class="section"><span class="label">Priority:</span> ${r.priority}</div>
+                        <div class="section"><span class="label">Status:</span> ${r.status || "New"}</div>
+
+                        <div class="deadline-box ${deadline.className}">
+                            ${deadline.label}
+                        </div>
+
+                        <div class="section">
+                            <span class="label">Progress:</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill ${progress.stage}" style="width:${progress.percent}%">
+                                    ${progress.percent}%
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <span class="label">Workflow Timeline:</span>
+                            ${renderTimeline(r)}
+                        </div>
+
+                        <div class="section"><span class="label">Address:</span> ${r.address || "-"}</div>
+                        <div class="section"><span class="label">Contact Name:</span> ${r.contact_name || "-"}</div>
+                        <div class="section"><span class="label">Designation:</span> ${r.designation || "-"}</div>
+                        <div class="section"><span class="label">Contact Phone:</span> ${r.contact_phone ? `<a href="tel:${r.contact_phone}">${r.contact_phone}</a>` : "-"}</div>
+                        <div class="section"><span class="label">Availability Date:</span> ${r.availability_date || "-"}</div>
+                        <div class="section"><span class="label">Availability Time:</span> ${r.availability_time || "-"}</div>
+
+                        ${r.photo ? `<div class="section"><img src="http://localhost:3000${r.photo}" alt="Repair photo" onclick="window.open('http://localhost:3000${r.photo}', '_blank')"></div>` : ""}
+
+                        <div class="box">
+                            <div class="label">Response</div>
+                            <select id="response-${r.repair_id}">
+                                <option value="">Select response</option>
+                                <option value="Accepted" ${r.response === "Accepted" ? "selected" : ""}>Accepted</option>
+                                <option value="Declined" ${r.response === "Declined" ? "selected" : ""}>Declined</option>
+                            </select>
+
+                            <div class="label">Confirmed Time</div>
+                            <input type="text" id="time-${r.repair_id}" placeholder="e.g. 18/03/2026 13:00" value="${r.confirmed_time || ""}">
+
+                            <div class="label">Additional Information</div>
+                            <textarea id="notes-${r.repair_id}" placeholder="Add notes here">${r.technician_notes || ""}</textarea>
+
+                            <button onclick="saveResponse('${r.repair_id}')">Save Response</button>
+                        </div>
+
+                        <div class="box">
+                            <div class="label">Visit Confirmation</div>
+                            <select id="visit-status-${r.repair_id}">
+                                <option value="">Select visit status</option>
+                                <option value="Visited" ${r.visit_confirmed === "Visited" ? "selected" : ""}>Visited</option>
+                                <option value="Not Visited" ${r.visit_confirmed === "Not Visited" ? "selected" : ""}>Not Visited</option>
+                            </select>
+
+                            <div class="label">Visit Time</div>
+                            <input type="text" id="visit-time-${r.repair_id}" placeholder="e.g. 18/03/2026 13:00" value="${r.visit_time || ""}">
+
+                            <div class="label">Visit Notes</div>
+                            <textarea id="visit-notes-${r.repair_id}" placeholder="What did you find?">${r.visit_notes || ""}</textarea>
+
+                            <button type="button" onclick="saveVisit('${r.repair_id}')">Save Visit</button>
+                        </div>
+
+                       <div class="box">
+                        <div class="label">Quotation Amount</div>
+                        <input type="text" id="quote-amount-${r.repair_id}" placeholder="Quote Amount (USD)" value="${r.quotation_amount || ""}" />
+
+                        <div class="label">Quotation Notes</div>
+                        <textarea id="quote-notes-${r.repair_id}" placeholder="Explain work required">${r.quotation_notes || ""}</textarea>
+
+                        <input type="file" id="quote-file-${r.repair_id}" />
+
+                        <button type="button" onclick="saveQuotation('${r.repair_id}')">Submit Quotation</button>
+                        </div>
+
+                    <div class="box">
+                        <div class="label">Current Quote Status</div>
+                        <div>${r.quotation_status || "-"}</div>
+                        <div class="section"><span class="label">Landlord Notes:</span> ${r.landlord_notes || "-"}</div>
+                    </div>
+                    <div class="box">
+                        <div class="label">Update Status</div>
+                        <select onchange="updateStatus('${r.repair_id}', this.value)">
+                            <option value="Assigned" ${r.status === "Assigned" ? "selected" : ""}>Assigned</option>
+                            <option value="In Progress" ${r.status === "In Progress" ? "selected" : ""}>In Progress</option>
+                            <option value="Completed" ${r.status === "Completed" ? "selected" : ""}>Completed</option>
+                        </select>
+                    </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        async function updateStatus(id, status) {
+            try {
+                await fetch(`http://localhost:3000/repairs/${id}/status`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ status })
+                });
+
+                loadJobs();
+            } catch (error) {
+                console.error("Error updating status:", error);
+            }
+        }
+
+        async function saveResponse(repairId) {
+            const response = document.getElementById(`response-${repairId}`).value;
+            const confirmed_time = document.getElementById(`time-${repairId}`).value;
+            const technician_notes = document.getElementById(`notes-${repairId}`).value;
+
+            try {
+                await fetch(`http://localhost:3000/repairs/${repairId}/response`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ response, confirmed_time, technician_notes })
+                });
+
+                loadJobs();
+            } catch (error) {
+                console.error("Error saving response:", error);
+            }
+        }
+
+        async function saveVisit(repairId) {
+            const visit_confirmed = document.getElementById(`visit-status-${repairId}`).value;
+            const visit_time = document.getElementById(`visit-time-${repairId}`).value;
+            const visit_notes = document.getElementById(`visit-notes-${repairId}`).value;
+
+            try {
+                await fetch(`http://localhost:3000/repairs/${repairId}/visit`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ visit_confirmed, visit_time, visit_notes })
+                });
+
+                loadJobs();
+            } catch (error) {
+                console.error("Error saving visit:", error);
+            }
+        }
+
+        async function saveQuotation(repairId) {
+            const quotation_amount = document.getElementById(`quote-amount-${repairId}`).value;
+            const quotation_notes = document.getElementById(`quote-notes-${repairId}`).value;
+            const fileInput = document.getElementById(`quote-file-${repairId}`);
+            const file = fileInput.files[0];
+
+        try {
+            const formData = new FormData();
+            formData.append("quotation_amount", quotation_amount);
+            formData.append("quotation_notes", quotation_notes);
+            if (file) formData.append("quote_file", file);
+
+            await fetch(`http://localhost:3000/repairs/${repairId}/quotation`, {
+                method: "PUT",
+                body: formData
+            });
+
+            loadJobs();
+        } catch (error) {
+        console.error("Error saving quotation:", error);
+        }
+    }
+
+        loadJobs();
+    </script>
+
+</body>
+</html>
