@@ -454,8 +454,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(__dirname));
 app.use("/uploads", express.static("uploads"));
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "dashboard.html"));
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
 });
 
 const repairsFile = path.join(__dirname, "repairs.json");
