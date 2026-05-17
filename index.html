@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Property Management ZW</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+
+        body{
+            margin:0;
+            font-family:Arial, sans-serif;
+            background:#f4f6f9;
+            color:#333;
+        }
+
+        .header{
+            background:#0f172a;
+            color:white;
+            padding:40px 20px;
+            text-align:center;
+        }
+
+        .header h1{
+            margin:0;
+            font-size:32px;
+        }
+
+        .header p{
+            margin-top:10px;
+            color:#cbd5e1;
+        }
+
+        .container{
+            padding:20px;
+            max-width:900px;
+            margin:auto;
+        }
+
+        .grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+            gap:20px;
+            margin-top:30px;
+        }
+
+        .card{
+            background:white;
+            padding:25px;
+            border-radius:12px;
+            box-shadow:0 4px 12px rgba(0,0,0,0.08);
+            text-align:center;
+        }
+
+        .card h2{
+            margin-top:0;
+        }
+
+        .btn{
+            display:inline-block;
+            margin-top:15px;
+            padding:12px 20px;
+            background:#2563eb;
+            color:white;
+            text-decoration:none;
+            border-radius:8px;
+            font-weight:bold;
+        }
+
+        .btn:hover{
+            background:#1d4ed8;
+        }
+
+        .footer{
+            text-align:center;
+            padding:30px;
+            color:#666;
+            font-size:14px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Property Management ZW</h1>
+        <p>Smart Repair & Maintenance Management Platform</p>
+    </div>
+
+    <div class="container">
+
+        <div class="grid">
+
+            <div class="card">
+                <h2>Repair Dashboard</h2>
+                <p>Track all repair jobs and technician progress.</p>
+                <a class="btn" href="/dashboard.html">Open Dashboard</a>
+            </div>
+
+            <div class="card">
+                <h2>Submit Repair</h2>
+                <p>Tenants can submit maintenance requests.</p>
+                <a class="btn" href="/submit-repair.html">Submit Request</a>
+            </div>
+
+            <div class="card">
+                <h2>Technician Panel</h2>
+                <p>Technicians can update repair progress.</p>
+                <a class="btn" href="/technician.html">Technician Access</a>
+            </div>
+
+            <div class="card">
+                <h2>Suppliers</h2>
+                <p>Manage suppliers and quotations.</p>
+                <a class="btn" href="/suppliers.html">View Suppliers</a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer">
+        Property Management ZW © 2026
+    </div>
+
+</body>
+</html>
