@@ -698,5 +698,30 @@
       "invoice_file": "",
       "completion_photo": ""
     }
+  },
+  {
+    "id": 1779649474333,
+    "property_type": "Complex",
+    "property_name": "Rossal Park ",
+    "address": "19 Rossal Park, Greendale ",
+    "unit_number": "4",
+    "trade": "electrical",
+    "description": "No power ",
+    "priority": "High",
+    "availability_date": "2026-05-25",
+    "availability_time": "",
+    "contact_name": "Andy ",
+    "designation": "Caretaker ",
+    "contact_phone": "+263773402513",
+    "photo": null,
+    "status": "Assigned",
+    "created_at": "2026-05-24T19:04:34.334Z",
+    "technician": "Bright Spark Electrical",
+    "history": [
+      {
+        "action": "Repair submitted",
+        "timestamp": "2026-05-24T19:04:34.410Z"
+      }
+    ]
   }
 ]

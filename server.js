@@ -489,67 +489,62 @@ app.get("/repairs", (req, res) => {
     res.json(repairs);
 });
 
+
 app.post("/repairs", upload.single("photo"), (req, res) => {
     try {
-        const repairs = readRepairs();
+
+        const repairsFile = "./repairs.json";
+
+        let repairs = [];
+
+        if (fs.existsSync(repairsFile)) {
+            const data = fs.readFileSync(repairsFile);
+            repairs = JSON.parse(data);
+        }
 
         const newRepair = {
-            repair_id: "R" + Date.now(),
+            id: Date.now(),
+
             property_type: req.body.property_type,
             property_name: req.body.property_name,
             address: req.body.address,
             unit_number: req.body.unit_number,
-            description: req.body.description,
+
             trade: req.body.trade,
+            description: req.body.description,
             priority: req.body.priority,
+
             availability_date: req.body.availability_date,
             availability_time: req.body.availability_time,
+
             contact_name: req.body.contact_name,
             designation: req.body.designation,
             contact_phone: req.body.contact_phone,
-            photo: req.file ? `/uploads/${req.file.filename}` : null,
 
-            technician: "Unassigned",
-            status: "New",
-            submitted_at: new Date().toISOString(),
+            photo: req.file ? req.file.filename : null,
 
-            response: "",
-            confirmed_time: "",
-            technician_notes: "",
-
-            visit_confirmed: "",
-            visit_time: "",
-            visit_notes: "",
-
-            quotation_amount: "",
-            quotation_notes: "",
-            quotation_status: "",
-            landlord_notes: "",
-
-            history: []
+            status: "Pending",
+            created_at: new Date()
         };
-
-        const defaultSupplierName = getPropertyDefaultSupplier(
-  newRepair.property_name,
-  newRepair.trade
+const defaultSupplierName = getPropertyDefaultSupplier(
+    newRepair.property_name,
+    newRepair.trade
 );
+const assignedSupplier = getSupplierByTrade(newRepair.trade);
 
 if (defaultSupplierName) {
-  newRepair.technician = defaultSupplierName;
-  newRepair.status = "Assigned";
-} else {
-  const assignedSupplier = getSupplierByTrade(newRepair.trade);
+    newRepair.technician = defaultSupplierName;
+    newRepair.status = "Assigned";
 
-  if (assignedSupplier) {
+} else if (assignedSupplier) {
     newRepair.technician = assignedSupplier.name;
     newRepair.status = "Assigned";
-  } else {
+
+} else {
     newRepair.technician = "Unassigned";
     newRepair.status = "New";
-  }
 }
-        const technicianNumber = technicianPhones[newRepair.technician];
-
+const technicianNumber = technicianPhones[newRepair.technician];
 if (technicianNumber && newRepair.status === "Assigned") {
   sendWhatsApp(
   technicianNumber,
