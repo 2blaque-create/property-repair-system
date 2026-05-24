@@ -503,7 +503,7 @@ app.post("/repairs", upload.single("photo"), (req, res) => {
         }
 
         const newRepair = {
-            id: Date.now(),
+            repair_id: "R" + Date.now(),
 
             property_type: req.body.property_type,
             property_name: req.body.property_name,
