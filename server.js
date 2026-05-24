@@ -437,7 +437,7 @@ const client = twilio(
 async function sendWhatsApp(to, body) {
   try {
     const message = await client.messages.create({
-      from: process.env.TWILIO_WHATSAPP_FROM,
+    from: process.env.TWILIO_WHATSAPP_NUMBER,
       to,
       body
     });
@@ -545,6 +545,10 @@ if (defaultSupplierName) {
     newRepair.status = "New";
 }
 const technicianNumber = technicianPhones[newRepair.technician];
+console.log("Assigned technician:", newRepair.technician);
+console.log("Repair status:", newRepair.status);
+console.log("Technician number:", technicianNumber);
+
 if (technicianNumber && newRepair.status === "Assigned") {
   sendWhatsApp(
   technicianNumber,
