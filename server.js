@@ -16,6 +16,7 @@ const path = require("path");
 const fs = require("fs");
 const suppliersFile = path.join(__dirname, "suppliers.json");
 const propertyDefaultsFile = path.join(__dirname, "property_defaults.json");
+const propertiesFile = path.join(__dirname, "properties.json");
 
 function readSuppliers() {
   try {
@@ -25,9 +26,23 @@ function readSuppliers() {
     return [];
   }
 }
+function readProperties() {
+  try {
+    const data = fs.readFileSync(propertiesFile, "utf8");
+    return JSON.parse(data || "[]");
+  } catch (error) {
+    return [];
+  }
+}
 
 function writeSuppliers(suppliers) {
   fs.writeFileSync(suppliersFile, JSON.stringify(suppliers, null, 2));
+}
+function writeProperties(properties) {
+  fs.writeFileSync(
+    propertiesFile,
+    JSON.stringify(properties, null, 2)
+  );
 }
 function readPropertyDefaults() {
   try {
@@ -96,8 +111,8 @@ function getSupplierByTrade(trade) {
 }
 
 const app = express();
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 function findRepairById(repairs, repairId) {
   return repairs.find(r => r.repair_id === repairId);
 }
@@ -156,7 +171,7 @@ async function notifyCaretaker(repair, message) {
 }
 async function notifyLandlord(repair, message) {
   try {
-    let phone = repair.people?.landlord?.phone;
+    let phone = repair.landlord_phone;
 
     if (!phone) {
       console.log("❌ No landlord phone for", repair.repair_id);
@@ -501,6 +516,15 @@ app.post("/repairs", upload.single("photo"), (req, res) => {
             const data = fs.readFileSync(repairsFile);
             repairs = JSON.parse(data);
         }
+        const properties = readProperties();
+
+        const selectedProperty = properties.find(
+         (p) =>
+           p.property_name &&
+          req.body.property_name &&
+          p.property_name.trim().toLowerCase() ===
+            req.body.property_name.trim().toLowerCase()
+      );
 
         const newRepair = {
             repair_id: "R" + Date.now(),
@@ -509,6 +533,15 @@ app.post("/repairs", upload.single("photo"), (req, res) => {
             property_name: req.body.property_name,
             address: req.body.address,
             unit_number: req.body.unit_number,
+
+            landlord_name: selectedProperty?.landlord_name || "",
+            landlord_phone: selectedProperty?.landlord_phone || "",
+
+            agent_name: selectedProperty?.agent_name || "",
+            agent_phone: selectedProperty?.agent_phone || "",
+
+            caretaker_name: selectedProperty?.caretaker_name || "",
+            caretaker_phone: selectedProperty?.caretaker_phone || "",
 
             trade: req.body.trade,
             description: req.body.description,
