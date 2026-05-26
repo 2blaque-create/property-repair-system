@@ -904,6 +904,27 @@ app.put("/repairs/:repairId/visit", (req, res) => {
         res.status(500).json({ message: "Error saving quote decision" });
     }
 });
+app.get("/properties-page", (req, res) => {
+  res.sendFile(__dirname + "/properties.html");
+});
+app.get("/properties", (req, res) => {
+  const properties = readProperties();
+  res.json(properties);
+});
+
+app.post("/properties", (req, res) => {
+  const properties = readProperties();
+  const newProperty = req.body;
+
+  properties.push(newProperty);
+  writeProperties(properties);
+
+  res.json({ success: true, property: newProperty });
+});
+app.get("/test-page", (req, res) => {
+    res.send("TEST PAGE WORKING");
+});
+
 app.get("/test-whatsapp", async (req, res) => {
   await sendWhatsApp(
     process.env.MY_WHATSAPP_TO,

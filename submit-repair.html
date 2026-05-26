@@ -96,8 +96,7 @@ button:hover {
 <div class="container">
 
     <h1>Property Repair Request</h1>
-
-    <form id="repairForm" enctype="multipart/form-data">
+<form id="repairForm" enctype="multipart/form-data">
 
   <div class="form-group">
     <label>Property Type</label>
@@ -110,12 +109,23 @@ button:hover {
 
   <div class="form-group">
     <label>Property Name</label>
-    <input type="text" name="property_name" required>
+    <select name="property_name" id="propertySelect" required>
+    <option value="">Select Property</option>
+</select>
 </div>
 
   <div class="form-group">
     <label>Address</label>
     <input type="text" name="address" required>
+
+<input type="hidden" name="landlord_name">
+<input type="hidden" name="landlord_phone">
+
+<input type="hidden" name="agent_name">
+<input type="hidden" name="agent_phone">
+
+<input type="hidden" name="caretaker_name">
+<input type="hidden" name="caretaker_phone">
 
 <div class="form-group">
     <label>Unit / House / Shop Number</label>
@@ -178,7 +188,7 @@ button:hover {
 
         <button type="submit">Submit Repair</button>
 
-    </form>
+    </form> 
 
     <p id="message"></p>
 
@@ -207,6 +217,58 @@ button:hover {
                 console.error(error);
             }
         });
+
+async function loadProperties() {
+    try {
+        const response = await fetch('/properties');
+        const properties = await response.json();
+
+        const select = document.getElementById('propertySelect');
+
+        properties.forEach(property => {
+            const option = document.createElement('option');
+            option.value = property.property_name;
+            option.textContent = property.property_name;
+            select.appendChild(option);
+
+        });
+         select.addEventListener('change', () => {
+    const selected = properties.find(
+        p => p.property_name === select.value
+    );
+
+    if (selected) {
+
+    document.querySelector('[name="address"]').value =
+        selected.address || '';
+
+    document.querySelector('[name="landlord_name"]').value =
+        selected.landlord_name || '';
+
+    document.querySelector('[name="landlord_phone"]').value =
+        selected.landlord_phone || '';
+
+    document.querySelector('[name="agent_name"]').value =
+        selected.agent_name || '';
+
+    document.querySelector('[name="agent_phone"]').value =
+        selected.agent_phone || '';
+
+    document.querySelector('[name="caretaker_name"]').value =
+        selected.caretaker_name || '';
+
+    document.querySelector('[name="caretaker_phone"]').value =
+        selected.caretaker_phone || '';
+
+}
+});
+
+    } catch (error) {
+        console.error('Error loading properties:', error);
+    }
+}
+
+loadProperties();
     </script>
 </div>
 </body>

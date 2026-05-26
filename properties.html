@@ -1,0 +1,160 @@
+ <!DOCTYPE html>
+<html>
+<head>
+  <title>Properties Dashboard</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f6f9;
+      padding: 30px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Properties Dashboard</h1>
+
+<div class="card">
+
+  <h2>Add Property</h2>
+
+  <input id="property_name" placeholder="Property Name">
+  <input id="address" placeholder="Address">
+
+  <input id="landlord_name" placeholder="Landlord Name">
+  <input id="landlord_phone" placeholder="Landlord Phone">
+
+  <input id="agent_name" placeholder="Agent Name">
+  <input id="agent_phone" placeholder="Agent Phone">
+
+  <input id="caretaker_name" placeholder="Caretaker Name">
+  <input id="caretaker_phone" placeholder="Caretaker Phone">
+
+  <button onclick="saveProperty()">Save Property</button>
+
+</div>
+
+<div class="card">
+
+  <h2>Properties List</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Property</th>
+        <th>Landlord</th>
+        <th>Agent</th>
+        <th>Caretaker</th>
+      </tr>
+    </thead>
+
+    <tbody id="propertiesTable"></tbody>
+
+  </table>
+
+</div>
+
+<script>
+
+async function loadProperties() {
+
+  const response = await fetch('/properties');
+
+  const properties = await response.json();
+
+  const table = document.getElementById('propertiesTable');
+
+  table.innerHTML = '';
+
+  properties.forEach(property => {
+
+    table.innerHTML += `
+      <tr>
+        <td>${property.property_name}</td>
+        <td>${property.landlord_name}</td>
+        <td>${property.agent_name}</td>
+        <td>${property.caretaker_name}</td>
+      </tr>
+    `;
+  });
+}
+
+async function saveProperty() {
+
+  const property = {
+    property_name: document.getElementById('property_name').value,
+    address: document.getElementById('address').value,
+
+    landlord_name: document.getElementById('landlord_name').value,
+    landlord_phone: document.getElementById('landlord_phone').value,
+
+    agent_name: document.getElementById('agent_name').value,
+    agent_phone: document.getElementById('agent_phone').value,
+
+    caretaker_name: document.getElementById('caretaker_name').value,
+    caretaker_phone: document.getElementById('caretaker_phone').value
+  };
+
+  await fetch('/properties', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(property)
+  });
+
+  alert('Property saved');
+
+  loadProperties();
+}
+
+loadProperties();
+
+</script>
+
+</body>
+</html>
