@@ -233,6 +233,8 @@ button:hover {
 <div id="supplierStats"></div>
 
 <div id="summaryBar" style="margin:15px 0; font-weight:bold;"></div>
+<div id="financialSummary" style="margin:15px 0; padding:15px; background:#f4f8ff; border-left:5px solid #2563eb; border-radius:8px; font-weight:bold;">
+</div>
 
 <div>
     <button onclick="setPriorityFilter('all')">All</button>
@@ -451,6 +453,23 @@ function hideFullHistory(repairId) {
     document.getElementById(`full-history-${repairId}`).style.display = "none";
 }
 function renderRepairs(list) {
+    const totalApproved = list
+    .filter(r => r.quotation_status === "Approved")
+    .reduce((sum, r) => sum + Number(r.quotation_amount || 0), 0);
+
+const totalPending = list
+    .filter(r => !r.quotation_status || r.quotation_status === "Pending")
+    .reduce((sum, r) => sum + Number(r.quotation_amount || 0), 0);
+
+const completedCount = list.filter(r => r.status === "Completed").length;
+
+document.getElementById("financialSummary").innerHTML = `
+    <strong>Approved Quotes:</strong> $${totalApproved}
+    &nbsp; | &nbsp;
+    <strong>Pending Quotes:</strong> $${totalPending}
+    &nbsp; | &nbsp;
+    <strong>Completed Repairs:</strong> ${completedCount}
+`;
     const table = document.getElementById("repairsTable");
 
     table.innerHTML = `
