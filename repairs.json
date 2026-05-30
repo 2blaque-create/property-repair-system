@@ -723,5 +723,67 @@
         "timestamp": "2026-05-24T19:04:34.410Z"
       }
     ]
+  },
+  {
+    "repair_id": "RPR-2026-0001",
+    "property_type": "Complex",
+    "property_name": "Sunset Mews ",
+    "address": "29 Grosvenor road, Highlands",
+    "unit_number": "2",
+    "landlord_name": "Bubbles Chids",
+    "landlord_phone": "+263719226861",
+    "agent_name": "Lavender",
+    "agent_phone": "+263773402513",
+    "caretaker_name": "Andy ",
+    "caretaker_phone": "+263773402513",
+    "trade": "general_maintenance",
+    "description": "Paving worn ",
+    "priority": "Low",
+    "availability_date": "2026-05-27",
+    "availability_time": "",
+    "contact_name": "Lavs",
+    "designation": "Tenant ",
+    "contact_phone": "+263773402513",
+    "photo": null,
+    "status": "Assigned",
+    "created_at": "2026-05-26T19:57:20.753Z",
+    "technician": "BuildRight Maintenance",
+    "history": [
+      {
+        "action": "Repair submitted",
+        "timestamp": "2026-05-26T19:57:20.850Z"
+      }
+    ]
+  },
+  {
+    "repair_id": "RPR-2026-0002",
+    "property_type": "Complex",
+    "property_name": "Arcturus Road",
+    "address": "2 Arcturus Road, Highlands",
+    "unit_number": "38 ",
+    "landlord_name": "Lavender",
+    "landlord_phone": "+263719226861",
+    "agent_name": "Lavender",
+    "agent_phone": "+263719226861",
+    "caretaker_name": "Ali",
+    "caretaker_phone": "+263719226861",
+    "trade": "electrical",
+    "description": "Gate motor ",
+    "priority": "Low",
+    "availability_date": "2026-05-28",
+    "availability_time": "",
+    "contact_name": "Lavender ",
+    "designation": "tenant ",
+    "contact_phone": "+263773402513",
+    "photo": "/uploads/1779912417239-IMG_8409.jpeg",
+    "status": "Assigned",
+    "created_at": "2026-05-27T20:06:57.260Z",
+    "technician": "Bright Spark Electrical",
+    "history": [
+      {
+        "action": "Repair submitted",
+        "timestamp": "2026-05-27T20:06:57.354Z"
+      }
+    ]
   }
 ]

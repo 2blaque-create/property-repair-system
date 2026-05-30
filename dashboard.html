@@ -128,22 +128,53 @@ button:hover {
         }
 
         .modal {
-            display: none;
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.4);
-        }
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    background: rgba(0,0,0,0.4);
+}
 
         .modal-content {
-            background: white;
-            margin: 40px auto;
-            padding: 20px;
-            width: 90%;
-            max-width: 900px;
-        }
+    background: white;
+    margin: 40px auto;
+    padding: 20px;
+    width: 90%;
+    max-width: 900px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    border-radius: 8px;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+        .detail-grid {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 8px 15px;
+    margin-top: 10px;
+}
+
+.detail-label {
+    font-weight: bold;
+}
+
+.detail-section {
+    margin-bottom: 20px;
+}
+
+.detail-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #111827;
+    background: #f3f4f6;
+    padding: 10px 15px;
+    border-left: 5px solid #2563eb;
+    border-radius: 4px;
+    margin: 20px 0 15px 0;
+}
+
         .topnav {
     background: #111827;
     padding: 15px;
@@ -163,7 +194,9 @@ button:hover {
 
 .topnav a:hover {
     background: #1d4ed8;
-}.overdue-box {
+}
+
+.overdue-box {
     border-left: 6px solid #dc2626;
     background: #fff5f5;
     padding: 20px;
@@ -534,34 +567,33 @@ function openModal(repairId) {
     `).join("") || "No history";
 
     const photoHtml = repair.photo
-        ? `<img class="detail-photo" src="http://localhost:3000${repair.photo}" onclick="window.open('http://localhost:3000${repair.photo}', '_blank')">`
-        : "No photo";
+    ? `
+        <img
+            class="detail-photo"
+            src="${repair.photo}"
+            style="max-width:100%; border-radius:10px; margin-top:10px;"
+        >
+      `
+    : "No photo";
 
     document.getElementById("modalBody").innerHTML = `
         <h2>Repair Details</h2>
 
         <div class="detail-section">
-        <div class="detail-title">Landlord Brief</div>
-        <div class="detail-section">
-        <<div class="detail-title">Quotation Decision</div>
+    <div class="detail-title">Quotation Decision</div>
 
-        <div class="detail-label">Quote Status</div>
-        <div>${repair.quotation_status || "Pending / Not decided"}</div>
+    <div class="detail-label">Quote Status</div>
+    <div>${repair.quotation_status || "Pending / Not decided"}</div>
 
-        <div class="detail-label">Landlord Notes</div>
-        <div>
+    <div class="detail-label">Landlord Notes</div>
+    <div>
         <textarea id="landlord-notes-${repair.repair_id}" placeholder="Add landlord notes...">${repair.landlord_notes || ""}</textarea>
-        </div>
+    </div>
 
-        <div class="detail-label">Landlord Decision</div>
-        <div style="margin-top:10px;">
-          <button type="button" onclick="saveQuoteDecision('${repair.repair_id}', 'Approved')">Approve Quote</button>
-          <button type="button" onclick="saveQuoteDecision('${repair.repair_id}', 'Declined')">Decline Quote</button>
-        </div>
-    }
-</div>
-        <div style="background:#f5f5f5; padding:10px; border-radius:6px;">
-        ${generateLandlordBrief(repair)}
+    <div class="detail-label">Landlord Decision</div>
+    <div style="margin-top:10px;">
+        <button type="button" onclick="saveQuoteDecision('${repair.repair_id}','Approved')">Approve Quote</button>
+        <button type="button" onclick="saveQuoteDecision('${repair.repair_id}','Declined')">Decline Quote</button>
     </div>
 </div>
 
@@ -604,7 +636,7 @@ function openModal(repairId) {
                 <div class="detail-label">Quote Notes</div>
                 <div>${repair.quotation_notes || "-"}</div>
                 <div class="detail-label">Quote File</div>
-                <div>${repair.quotation_file ? `<a href="${repair.quotation_file}" download>Download Quote</a>` : "--"}</div>
+               <div>${repair.quotation_file ? `<a href="${repair.quotation_file}" download>Download Quote</a>` : "-"}</div>
 
                 <div class="detail-label">Quote Status</div>
                 <div>${repair.quotation_status || "Pending / Not decided"}</div>
@@ -614,17 +646,17 @@ function openModal(repairId) {
                 <textarea id="landlord-notes-${repair.repair_id}" placeholder="Add landlord notes...">${repair.landlord_notes || ""}</textarea>
                 </div>
 
-                <div class="detail-label">Landlord Decision</div>
-                <div style="margin-top:10px;">
-                ${
-                    repair.quotation_status === "Approved" || repair.quotation_status === "Declined"
-                    ? `<div><strong>Decision:</strong> ${repair.quotation_status}</div>`
-                    : `
-                        <button type="button" onclick="saveQuoteDecision('${repair.repair_id}', 'Approved')">Approve Quote</button>
-                        <button type="button" onclick="saveQuoteDecision('${repair.repair_id}', 'Declined')">Decline Quote</button>
-                     `
-                }
-                </div>
+               <div class="detail-label">Landlord Decision</div>
+
+<div style="margin-top:10px;">
+    <button type="button" onclick="saveQuoteDecision('${repair.repair_id}','Approved')">
+        Approve Quote
+    </button>
+
+    <button type="button" onclick="saveQuoteDecision('${repair.repair_id}','Declined')">
+        Decline Quote
+    </button>
+</div>
 
         <div class="detail-section">
             <div class="detail-title">Photo</div>

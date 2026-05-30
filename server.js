@@ -111,6 +111,8 @@ function getSupplierByTrade(trade) {
 }
 
 const app = express();
+
+app.use("/uploads", express.static("uploads"));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 function findRepairById(repairs, repairId) {
@@ -503,7 +505,17 @@ app.get("/repairs", (req, res) => {
     const repairs = readRepairs();
     res.json(repairs);
 });
+function generateRepairId(repairs) {
+    const year = new Date().getFullYear();
 
+    const yearlyRepairs = repairs.filter(r =>
+        r.repair_id && r.repair_id.startsWith(`RPR-${year}-`)
+    );
+
+    const nextNumber = yearlyRepairs.length + 1;
+
+    return `RPR-${year}-${String(nextNumber).padStart(4, "0")}`;
+}
 
 app.post("/repairs", upload.single("photo"), (req, res) => {
     try {
@@ -527,7 +539,7 @@ app.post("/repairs", upload.single("photo"), (req, res) => {
       );
 
         const newRepair = {
-            repair_id: "R" + Date.now(),
+            repair_id: generateRepairId(repairs),
 
             property_type: req.body.property_type,
             property_name: req.body.property_name,
@@ -554,7 +566,7 @@ app.post("/repairs", upload.single("photo"), (req, res) => {
             designation: req.body.designation,
             contact_phone: req.body.contact_phone,
 
-            photo: req.file ? req.file.filename : null,
+            photo: req.file ? `/uploads/${req.file.filename}` : null,
 
             status: "Pending",
             created_at: new Date()
@@ -812,13 +824,23 @@ app.put("/repairs/:repairId/visit", (req, res) => {
         repair.quotation_status = "Pending";
 
         if (req.file) {
-            repair.quotation_file = "/uploads/" + req.file.filename;
-            addHistory(repair, "Quotation file uploaded");
-        }
+    const newQuotationFile = "/uploads/" + req.file.filename;
 
-       addHistory(repair, `Quotation submitted ($${quotation_amount})`);
+    if (repair.quotation_file !== newQuotationFile) {
+        repair.quotation_file = newQuotationFile;
+        addHistory(repair, "Quotation file uploaded");
+    }
+}
+const quoteMessage = `Quotation submitted ($${quotation_amount})`;
 
-        writeRepairs(repairs);
+const alreadyLogged = (repair.history || []).some(
+    h => h.action === quoteMessage
+);
+
+if (!alreadyLogged) {
+    addHistory(repair, quoteMessage);
+}
+       writeRepairs(repairs);
 
             res.json({
                 message: "Quotation saved successfully",
