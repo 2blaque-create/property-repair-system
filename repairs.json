@@ -24,7 +24,7 @@
       }
     },
     "photo": "/uploads/1773692795604_IMG_1551.jpeg",
-    "status": "Completed",
+    "status": "In Progress",
     "submitted_at": "2026-03-16T20:26:35.634Z",
     "technician": "AquaFlow Plumbing",
     "history": [
@@ -299,6 +299,10 @@
       {
         "action": "Technician marked repair complete",
         "timestamp": "2026-04-26T15:06:03.906Z"
+      },
+      {
+        "action": "Quotation approved by landlord. Notes: happy with the quotation",
+        "timestamp": "2026-05-30T18:28:04.507Z"
       }
     ],
     "response": "Declined",

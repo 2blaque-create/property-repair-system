@@ -566,14 +566,30 @@ function openModal(repairId) {
         </div>
     `).join("") || "No history";
 
-    const photoHtml = repair.photo
-    ? `
-        <img
-            class="detail-photo"
-            src="${repair.photo}"
-            style="max-width:100%; border-radius:10px; margin-top:10px;"
-        >
-      `
+   let workflowHtml = `
+<div class="workflow-timeline">
+    <div class="workflow-step">Repair Logged</div>
+`;
+
+if (repair.technician) {
+    workflowHtml += `<div class="workflow-step">Technician Assigned (${repair.technician})</div>`;
+}
+
+if (repair.quotation_amount) {
+    workflowHtml += `<div class="workflow-step">Quotation Submitted ($${repair.quotation_amount})</div>`;
+}
+
+if (repair.quotation_status === "Approved") {
+    workflowHtml += `<div class="workflow-step">Landlord Approved Quote</div>`;
+}
+
+if (repair.status === "Completed") {
+    workflowHtml += `<div class="workflow-step">Repair Completed</div>`;
+}
+
+workflowHtml += `</div>`;
+const photoHtml = repair.photo
+    ? `<img class="detail-photo" src="${repair.photo}" style="max-width:100%; border-radius:10px; margin-top:10px;">`
     : "No photo";
 
     document.getElementById("modalBody").innerHTML = `
@@ -622,7 +638,10 @@ function openModal(repairId) {
         </div>
 
         <div class="detail-section">
-            <div class="detail-title">Workflow</div>
+           <div class="detail-title">Workflow</div>
+
+            ${workflowHtml}
+
             <div class="detail-grid">
                 <div class="detail-label">Technician</div><div>${repair.technician || "-"}</div>
                 <div class="detail-label">Response</div><div>${repair.response || "-"}</div>
@@ -680,6 +699,29 @@ window.onclick = function(event) {
         closeModal();
     }
 }
+
+function showToast(message) {
+    const toast = document.createElement("div");
+
+    toast.style.position = "fixed";
+    toast.style.top = "20px";
+    toast.style.right = "20px";
+    toast.style.background = "#28a745";
+    toast.style.color = "white";
+    toast.style.padding = "12px 20px";
+    toast.style.borderRadius = "8px";
+    toast.style.fontWeight = "bold";
+    toast.style.zIndex = "9999";
+    toast.style.boxShadow = "0 2px 10px rgba(0,0,0,0.2)";
+
+    toast.textContent = message;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
         async function saveQuoteDecision(repairId, decision) {
             const landlord_notes = document.getElementById(`landlord-notes-${repairId}`).value;
 
@@ -696,7 +738,7 @@ window.onclick = function(event) {
                     throw new Error(data.message || "Error saving quote decision");
                 }
 
-                alert(data.message || `Quotation ${decision.toLowerCase()} successfully`);
+                showToast(data.message || `Quotation ${decision.toLowerCase()} successfully`);
                 closeModal();
 
                 try {
@@ -707,7 +749,7 @@ window.onclick = function(event) {
 
             } catch (error) {
                 console.error("Error saving quote decision:", error);
-                alert(error.message || "Error saving quote decision");
+                showToast(error.message || "Error saving quote decision");
             }
     }
 
