@@ -468,6 +468,7 @@ function renderRepairs(list) {
             <th>History</th>
             <th>Quote File</th>
             <th>Landlord Brief</th>
+            <th>Quote Status</th>
             <th>Details</th>
         </tr>
     `;
@@ -547,6 +548,16 @@ function renderRepairs(list) {
         fullBrief.length > 120 ? fullBrief.slice(0, 120) + "..." : fullBrief;
 
         row.appendChild(briefCell);
+
+        const quoteStatusCell = document.createElement("td");
+        quoteStatusCell.innerHTML =
+            r.quotation_status === "Approved"
+                ? '<span style="color:green;font-weight:bold;">Approved</span>'
+                : r.quotation_status === "Declined"
+                ? '<span style="color:red;font-weight:bold;">Declined</span>'
+                : '<span style="color:orange;font-weight:bold;">Pending</span>';
+
+        row.appendChild(quoteStatusCell);
 
         const detailsCell = document.createElement("td");
         detailsCell.innerHTML = `<button onclick="openModal('${r.repair_id}')">Open</button>`;
