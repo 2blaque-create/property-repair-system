@@ -224,13 +224,23 @@ button:hover {
 
 <div class="container">
 
-<div id="overdueAlerts" class="card overdue-box">
-    <strong>Overdue Repairs</strong>
-    <div id="overdueList">No overdue repairs</div>
-</div>
+<details style="margin:15px 0;">
+    <summary style="font-weight:bold; color:#c62828; cursor:pointer;">
+        Overdue Repairs
+    </summary>
 
-<h3>Supplier Workload</h3>
-<div id="supplierStats"></div>
+    <div id="overdueAlerts" class="card overdue-box" style="margin-top:10px;">
+        <div id="overdueList">No overdue repairs</div>
+    </div>
+</details>
+
+<details style="margin:15px 0;">
+    <summary style="font-weight:bold; cursor:pointer;">
+        Supplier Workload
+    </summary>
+
+    <div id="supplierStats" style="margin-top:10px;"></div>
+</details>
 
 <div id="summaryBar" style="margin:15px 0; font-weight:bold;"></div>
 <div id="financialSummary" style="margin:15px 0; padding:15px; background:#f4f8ff; border-left:5px solid #2563eb; border-radius:8px; font-weight:bold;">
@@ -464,17 +474,23 @@ const totalPending = list
 const completedCount = list.filter(r => r.status === "Completed").length;
 
 document.getElementById("financialSummary").innerHTML = `
-    <strong>Approved Quotes:</strong> $${totalApproved}
-    &nbsp; | &nbsp;
-    <strong>Pending Quotes:</strong> $${totalPending}
-    &nbsp; | &nbsp;
-    <strong>Completed Repairs:</strong> ${completedCount}
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <div style="padding:12px; background:#eef2ff; border-radius:8px;">
+            <strong>Approved Quotes</strong><br>$${totalApproved}
+        </div>
+        <div style="padding:12px; background:#fef3c7; border-radius:8px;">
+            <strong>Pending Quotes</strong><br>$${totalPending}
+        </div>
+        <div style="padding:12px; background:#dcfce7; border-radius:8px;">
+            <strong>Completed Repairs</strong><br>${completedCount}
+        </div>
+    </div>
 `;
     const table = document.getElementById("repairsTable");
 
     table.innerHTML = `
         <tr>
-            <th>ID</th>
+           
             <th>Date</th>
             <th>Property</th>
             <th>Unit</th>
@@ -502,7 +518,7 @@ document.getElementById("financialSummary").innerHTML = `
         const progress = calculateProgress(r);
 
         row.innerHTML = `
-            <td>${r.repair_id}</td>
+            
             <td>${r.submitted_at ? new Date(r.submitted_at).toLocaleDateString() : "-"}</td>
             <td>${r.property_name || "-"}</td>
             <td>${r.unit_number || "-"}</td>
