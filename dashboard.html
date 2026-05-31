@@ -209,6 +209,56 @@ button:hover {
     color: #b91c1c;
     font-size: 18px;
 }
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 70vh;
+    -webkit-overflow-scrolling: touch;
+}
+
+#repairsTable {
+    min-width: 1400px;
+}
+#repairsTable th,
+#repairsTable td {
+    white-space: nowrap;
+}
+#repairsTable {
+    border-collapse: collapse;
+}
+
+#repairsTable th {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: #0056d6;
+    color: white;
+}
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .topnav {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .topnav a {
+        display: block;
+        margin-bottom: 8px;
+        text-align: center;
+    }
+
+    #financialSummary > div {
+        flex-direction: column;
+    }
+
+    #repairsTable {
+        font-size: 12px;
+    }
+}
     </style>
 </head>
 <body>
@@ -230,8 +280,8 @@ button:hover {
     </summary>
 
     <div id="overdueAlerts" class="card overdue-box" style="margin-top:10px;">
-        <div id="overdueList">No overdue repairs</div>
-    </div>
+    <div id="overdueList">No overdue repairs</div>
+</div>
 </details>
 
 <details style="margin:15px 0;">
@@ -260,21 +310,22 @@ button:hover {
     </select>
 </div>
 
-<table id="repairsTable">
-    <tr>
-        <th>ID</th>
-        <th>Date</th>
-        <th>Property</th>
-        <th>Unit</th>
-        <th>Description</th>
-        <th>Priority</th>
-        <th>Technician</th>
-        <th>Status</th>
-        <th>Progress</th>
-        <th>Photo</th>
-        <th>History</th>
-    </tr>
-</table>
+<div class="table-wrapper">
+    <table id="repairsTable">
+        <tr>
+            <th>Date</th>
+            <th>Property</th>
+            <th>Unit</th>
+            <th>Description</th>
+            <th>Priority</th>
+            <th>Technician</th>
+            <th>Status</th>
+            <th>Progress</th>
+            <th>Photo</th>
+            <th>History</th>
+        </tr>
+    </table>
+</div>
 
 <div id="modal" class="modal">
     <div class="modal-content">
