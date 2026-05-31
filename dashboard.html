@@ -500,9 +500,7 @@ document.getElementById("financialSummary").innerHTML = `
             <th>Status</th>
             <th>Progress</th>
             <th>Photo</th>
-            <th>History</th>
             <th>Quote File</th>
-            <th>Landlord Brief</th>
             <th>Quote Status</th>
             <th>Details</th>
         </tr>
@@ -564,25 +562,11 @@ document.getElementById("financialSummary").innerHTML = `
         }
         row.appendChild(photoCell);
 
-        const historyCell = document.createElement("td");
-        historyCell.innerHTML = buildHistoryCell(r.history, r.repair_id);
-        row.appendChild(historyCell);
-
         const quoteFileCell = document.createElement("td");
         quoteFileCell.innerHTML = r.quotation_file
         ? `<a href="${r.quotation_file}" target="_blank">📄 View</a>`
         : "—";
         row.appendChild(quoteFileCell);
-
-        const briefCell = document.createElement("td");
-        briefCell.style.maxWidth = "250px";
-        briefCell.style.fontSize = "12px";
-
-        const fullBrief = generateLandlordBrief(r);
-        briefCell.textContent =
-        fullBrief.length > 120 ? fullBrief.slice(0, 120) + "..." : fullBrief;
-
-        row.appendChild(briefCell);
 
         const quoteStatusCell = document.createElement("td");
         quoteStatusCell.innerHTML =
@@ -651,8 +635,12 @@ const photoHtml = repair.photo
     <div>
         <textarea id="landlord-notes-${repair.repair_id}" placeholder="Add landlord notes...">${repair.landlord_notes || ""}</textarea>
     </div>
-
+    <div class="detail-label">Landlord Brief</div>
+    <div style="background:#f4f8ff; padding:10px; border-radius:6px;">
+    ${generateLandlordBrief(repair)}
+    </div>
     <div class="detail-label">Landlord Decision</div>
+    
     <div style="margin-top:10px;">
         <button type="button" onclick="saveQuoteDecision('${repair.repair_id}','Approved')">Approve Quote</button>
         <button type="button" onclick="saveQuoteDecision('${repair.repair_id}','Declined')">Decline Quote</button>
