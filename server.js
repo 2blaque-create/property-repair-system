@@ -454,7 +454,7 @@ const client = twilio(
 async function sendWhatsApp(to, body) {
   try {
     const message = await client.messages.create({
-    from: process.env.TWILIO_WHATSAPP_NUMBER,
+    from: process.env.TWILIO_WHATSAPP_FROM,
       to,
       body
     });
@@ -505,6 +505,11 @@ app.get("/repairs", (req, res) => {
     const repairs = readRepairs();
     res.json(repairs);
 });
+app.get("/landlord-portal", (req, res) => {
+    res.sendFile(
+        path.join(__dirname, "landlord-portal.html")
+    );
+});
 function generateRepairId(repairs) {
     const year = new Date().getFullYear();
 
@@ -554,6 +559,14 @@ app.post("/repairs", upload.single("photo"), (req, res) => {
 
             caretaker_name: selectedProperty?.caretaker_name || "",
             caretaker_phone: selectedProperty?.caretaker_phone || "",
+
+            quotation_status: "",
+            quotation_amount: "",
+            quotation_notes: "",
+            quote_file: "",
+
+            landlord_decision: "",
+            landlord_notes: "",
 
             trade: req.body.trade,
             description: req.body.description,
@@ -703,7 +716,7 @@ app.put("/repairs/:repairId/status", (req, res) => {
     }
 });
 
-app.put("/repairs/:repairId/technician", (req, res) => {
+app.put("/repairs/:repairId/technician", async (req, res) => {
     try {
         const repairs = readRepairs();
         const repairId = req.params.repairId;
@@ -728,6 +741,25 @@ app.put("/repairs/:repairId/technician", (req, res) => {
         repair.landlord_notes = "";
 
         addHistory(repair, `Assigned to ${technician}`);
+
+        repair.status = "Assigned";
+
+        console.log("Technician route reached:", repair.repair_id, technician);
+
+await sendWhatsApp(
+  process.env.MY_WHATSAPP_TO,
+  `🔧 New repair assigned
+
+Property: ${repair.property_name || "Unknown"}
+Unit: ${repair.unit_number || "-"}
+Issue: ${repair.description || "Repair request"}
+Priority: ${repair.priority || "-"}
+
+Technician: ${technician}
+
+Open job:
+http://localhost:3000/technician.html?id=${repair.repair_id}`
+);
 
         writeRepairs(repairs);
 
@@ -955,6 +987,23 @@ app.get("/test-whatsapp", async (req, res) => {
 
   res.send("WhatsApp test sent!");
 });
+
+app.get("/financial-summary", (req, res) => {
+    res.sendFile(__dirname + "/financial-summary.html");
+});
+
+app.get("/documents", (req, res) => {
+    res.sendFile(__dirname + "/documents.html");
+});
+
+app.get("/property-performance", (req, res) => {
+    res.sendFile(__dirname + "/property-performance.html");
+});
+
+app.get("/tenant-directory", (req, res) => {
+    res.sendFile(__dirname + "/tenant-directory.html");
+});
+
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });

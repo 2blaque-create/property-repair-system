@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Financial Summary</title>
+    <link rel="stylesheet" href="landlord-portal.css">
+</head>
+<body>
+
+<div class="layout">
+    <aside class="sidebar">
+    <h2>Landlord</h2>
+
+    <a href="/landlord-portal">Dashboard</a>
+    <a href="/landlord-portal">Pending Quotations</a>
+    <a href="/landlord-portal">Approved Quotations</a>
+    <a href="/financial-summary">Financial Summary</a>
+    <a href="/documents">Documents</a>
+    <a href="/property-performance">Property Performance</a>
+    <a href="/tenant-directory">Tenant Directory</a>
+</aside>
+
+    <main class="main">
+        <div class="topbar">
+            <h1>Financial Summary</h1>
+            <span>Property Management ZW</span>
+        </div>
+
+        <div id="financialCards" class="summary-grid"></div>
+
+        <section class="section">
+            <h2>Spend By Property</h2>
+            <div id="spendByProperty"></div>
+        </section>
+    </main>
+</div>
+
+<script src="financial-summary.js"></script>
+</body>
+</html>

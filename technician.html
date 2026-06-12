@@ -400,8 +400,9 @@ renderJobs(jobs);
 
                         <input type="file" id="quote-file-${r.repair_id}" />
 
-                        <button type="button" onclick="saveQuotation('${r.repair_id}')">Submit Quotation</button>
-                        </div>
+                        <button type="button" onclick="saveQuotation(event, '${r.repair_id}')">
+                            Submit Quotation
+                        </button>
 
                     <div class="box">
                         <div class="label">Current Quote Status</div>
@@ -471,7 +472,9 @@ renderJobs(jobs);
             }
         }
 
-        async function saveQuotation(repairId) {
+        async function saveQuotation(event, repairId) {
+            event.preventDefault();
+
             const quotation_amount = document.getElementById(`quote-amount-${repairId}`).value;
             const quotation_notes = document.getElementById(`quote-notes-${repairId}`).value;
             const fileInput = document.getElementById(`quote-file-${repairId}`);

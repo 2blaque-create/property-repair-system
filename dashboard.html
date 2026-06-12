@@ -31,6 +31,27 @@
     box-shadow: 0 2px 10px rgba(0,0,0,0.08);
 }
 
+.kpi-card {
+    flex:1;
+    background:white;
+    padding:15px;
+    border-radius:10px;
+    min-width:180px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+.kpi-title {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.kpi-number {
+    font-size: 28px;
+    font-weight: bold;
+    color: #2563eb;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -228,13 +249,6 @@ button:hover {
     border-collapse: collapse;
 }
 
-#repairsTable th {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    background: #0056d6;
-    color: white;
-}
 @media (max-width: 768px) {
     .container {
         padding: 10px;
@@ -274,6 +288,14 @@ button:hover {
 
 <div class="container">
 
+    <div id="kpiCards" style="
+        display:flex;
+        gap:15px;
+        margin-bottom:20px;
+        flex-wrap:wrap;
+    ">
+    </div>
+
 <details style="margin:15px 0;">
     <summary style="font-weight:bold; color:#c62828; cursor:pointer;">
         Overdue Repairs
@@ -293,10 +315,43 @@ button:hover {
 </details>
 
 <div id="summaryBar" style="margin:15px 0; font-weight:bold;"></div>
-<div id="financialSummary" style="margin:15px 0; padding:15px; background:#f4f8ff; border-left:5px solid #2563eb; border-radius:8px; font-weight:bold;">
+<div id="recordCount"
+     style="
+        margin:10px 0;
+        font-weight:bold;
+        color:#555;
+">
 </div>
 
+<details style="margin:15px 0;">
+    <summary style="font-weight:bold; cursor:pointer;">
+        Financial Summary
+    </summary>
+
+    <div id="financialSummary"
+         style="margin-top:10px;
+                padding:15px;
+                background:#f4f8ff;
+                border-left:5px solid #2563eb;">
+    </div>
+</details>
+
+<details style="margin:15px 0;">
+    <summary style="font-weight:bold; cursor:pointer;">
+        Portfolio Analytics
+    </summary>
+
+    <div id="analyticsSummary" style="margin-top:10px;"></div>
+</details>
+
 <div>
+<details style="margin:15px 0;">
+    <summary style="font-weight:bold; cursor:pointer;">
+        Filters & Reports
+    </summary>
+
+    <div style="margin-top:10px;">
+
     <button onclick="setPriorityFilter('all')">All</button>
     <button onclick="setPriorityFilter('High')">High</button>
     <button onclick="setPriorityFilter('New')">New</button>
@@ -310,6 +365,38 @@ button:hover {
     </select>
 </div>
 
+<div style="margin:10px 0;">
+    Sort:
+    <button onclick="sortRepairsByDate('newest')">Newest First</button>
+    <button onclick="sortRepairsByDate('oldest')">Oldest First</button>
+</div>
+
+<div style="margin:10px 0;">
+    <button onclick="exportRepairs()">
+        Export Repairs to CSV
+    </button>
+</div>
+
+    </div>
+</details>
+<div style="margin-top:20px; margin-bottom:10px; display:flex; gap:10px; align-items:center;">
+    <input
+        type="text"
+        id="searchBox"
+        placeholder="🔍 Search property, unit, technician..."
+        onkeyup="searchRepairs()"
+        style="
+            flex:1;
+            padding:10px;
+            border:1px solid #ddd;
+            border-radius:8px;
+        "
+    >
+
+    <button onclick="searchRepairs()">
+        Search
+    </button>
+</div>
 <div class="table-wrapper">
     <table id="repairsTable">
         <tr>
@@ -514,6 +601,35 @@ function hideFullHistory(repairId) {
     document.getElementById(`full-history-${repairId}`).style.display = "none";
 }
 function renderRepairs(list) {
+
+    document.getElementById("recordCount").innerHTML =
+    `${list.length} repairs found`;
+
+ const highCount = list.filter(r => r.priority === "High").length;
+const inProgressCount = list.filter(r => r.status === "In Progress").length;
+const completedCount = list.filter(r => r.status === "Completed").length;
+
+document.getElementById("kpiCards").innerHTML = `
+<div class="kpi-card">
+    <div class="kpi-title">Total Repairs</div>
+    <div class="kpi-number">${list.length}</div>
+</div>
+
+<div class="kpi-card">
+    <div class="kpi-title">High Priority</div>
+    <div class="kpi-number">${highCount}</div>
+</div>
+
+<div class="kpi-card">
+    <div class="kpi-title">In Progress</div>
+    <div class="kpi-number">${inProgressCount}</div>
+</div>
+
+<div class="kpi-card">
+    <div class="kpi-title">Completed</div>
+    <div class="kpi-number">${completedCount}</div>
+</div>
+`;   
     const totalApproved = list
     .filter(r => r.quotation_status === "Approved")
     .reduce((sum, r) => sum + Number(r.quotation_amount || 0), 0);
@@ -522,7 +638,51 @@ const totalPending = list
     .filter(r => !r.quotation_status || r.quotation_status === "Pending")
     .reduce((sum, r) => sum + Number(r.quotation_amount || 0), 0);
 
-const completedCount = list.filter(r => r.status === "Completed").length;
+const byProperty = {};
+const byTechnician = {};
+const byPriority = {};
+
+list.forEach(r => {
+    const property = r.property_name || "Unknown";
+    const technician = r.technician || "Unassigned";
+    const priority = r.priority || "Unknown";
+
+    byProperty[property] =
+        (byProperty[property] || 0) + 1;
+
+    byTechnician[technician] =
+        (byTechnician[technician] || 0) + 1;
+
+    byPriority[priority] =
+        (byPriority[priority] || 0) + 1;
+});
+
+document.getElementById("analyticsSummary").innerHTML = `
+<div style="display:flex; gap:12px; flex-wrap:wrap;">
+
+    <div style="padding:12px; background:#eef2ff; border-radius:8px;">
+        <strong>Repairs by Property</strong><br>
+        ${Object.entries(byProperty)
+            .map(([k,v]) => `${k}: ${v}`)
+            .join("<br>")}
+    </div>
+
+    <div style="padding:12px; background:#f0fdf4; border-radius:8px;">
+        <strong>Repairs by Technician</strong><br>
+        ${Object.entries(byTechnician)
+            .map(([k,v]) => `${k}: ${v}`)
+            .join("<br>")}
+    </div>
+
+    <div style="padding:12px; background:#fff7ed; border-radius:8px;">
+        <strong>Priority Breakdown</strong><br>
+        ${Object.entries(byPriority)
+            .map(([k,v]) => `${k}: ${v}`)
+            .join("<br>")}
+    </div>
+
+</div>
+`;
 
 document.getElementById("financialSummary").innerHTML = `
     <div style="display:flex; gap:12px; flex-wrap:wrap;">
@@ -636,7 +796,74 @@ document.getElementById("financialSummary").innerHTML = `
         table.appendChild(row);
     });
 }
+
+function searchRepairs() {
+    const searchText = document
+        .getElementById("searchBox")
+        .value
+        .toLowerCase();
+
+    const filtered = repairs.filter(r =>
+        (r.property_name || "").toLowerCase().includes(searchText) ||
+        String(r.unit_number || "").toLowerCase().includes(searchText) ||
+        (r.description || "").toLowerCase().includes(searchText) ||
+        (r.technician || "").toLowerCase().includes(searchText) ||
+        (r.status || "").toLowerCase().includes(searchText)
+    );
+
+    renderRepairs(filtered);
+}
+
+function sortRepairsByDate(order) {
+    const sorted = [...repairs].sort((a, b) => {
+        const dateA = new Date(a.submitted_at || 0);
+        const dateB = new Date(b.submitted_at || 0);
+
+        return order === "newest"
+            ? dateB - dateA
+            : dateA - dateB;
+    });
+
+    renderRepairs(sorted);
+}
+
+function exportRepairs() {
+    const headers = [
+        "Date",
+        "Property",
+        "Unit",
+        "Description",
+        "Priority",
+        "Technician",
+        "Status",
+        "Quote Status"
+    ];
+
+    const rows = repairs.map(r => [
+        r.submitted_at ? new Date(r.submitted_at).toLocaleDateString() : "",
+        r.property_name || "",
+        r.unit_number || "",
+        r.description || "",
+        r.priority || "",
+        r.technician || "",
+        r.status || "",
+        r.quotation_status || ""
+    ]);
+
+    const csvContent = [headers, ...rows]
+        .map(row => row.join(","))
+        .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+
+    link.href = URL.createObjectURL(blob);
+    link.download = "repairs-report.csv";
+    link.click();
+}
+
 function openModal(repairId) {
+ 
     const repair = repairs.find(r => r.repair_id === repairId);
     if (!repair) return;
 

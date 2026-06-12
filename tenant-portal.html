@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tenant Portal</title>
+
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: #f4f7fb;
+        color: #222;
+    }
+
+    .topnav {
+        background: #111827;
+        padding: 18px;
+    }
+
+    .topnav a {
+        background: #2563eb;
+        color: white;
+        padding: 10px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        margin-right: 10px;
+        font-weight: bold;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 40px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 14px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    input {
+        width: 70%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    }
+
+    button {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 12px 18px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .result-card {
+        margin-top: 20px;
+        padding: 20px;
+        background: #f8fafc;
+        border-left: 5px solid #2563eb;
+        border-radius: 10px;
+    }
+    </style>
+
+</head>
+<body>
+
+<div class="topnav">
+    <a href="index.html">Home</a>
+    <a href="submit-repair.html">Submit Repair</a>
+    <a href="tenant-portal.html">Tenant Portal</a>
+</div>
+
+<div class="container">
+
+    <h1>Tenant Repair Portal</h1>
+
+    <h2>Track My Repair</h2>
+
+    <input
+        type="text"
+        id="ticketNumber"
+        placeholder="Enter tracking number"
+    >
+
+    <button onclick="trackRepair()">
+        Track Repair
+    </button>
+
+    <div id="repairResult"></div>
+
+</div>
+<script>
+async function trackRepair() {
+    const ticket = document.getElementById("ticketNumber").value.trim();
+
+    const res = await fetch("http://localhost:3000/repairs");
+    const repairs = await res.json();
+
+    const repair = repairs.find(r =>
+        r.ticket_number === ticket ||
+        r.tracking_number === ticket ||
+        r.repair_id === ticket
+    );
+
+    if (!repair) {
+        document.getElementById("repairResult").innerHTML =
+            "<p style='color:red;'>Repair not found.</p>";
+        return;
+    }
+
+    document.getElementById("repairResult").innerHTML = `
+<div class="result-card">
+
+    <h3>Repair Status</h3>
+
+    <p><strong>Tracking Number:</strong> ${repair.ticket_number || repair.tracking_number || repair.repair_id}</p>
+
+    <p><strong>Property:</strong> ${repair.property_name || ""}</p>
+
+    <p><strong>Unit:</strong> ${repair.unit_number || ""}</p>
+
+    <p><strong>Issue:</strong> ${repair.description || ""}</p>
+
+    <p>
+  <strong>Status:</strong>
+  <span style="
+    padding:6px 12px;
+    border-radius:20px;
+    color:white;
+    font-weight:bold;
+    background:
+      ${repair.status === "Completed" ? "#16a34a" :
+        repair.status === "In Progress" ? "#2563eb" :
+        repair.status === "Assigned" ? "#f59e0b" :
+        "#6b7280"};
+  ">
+    ${repair.status || "New"}
+  </span>
+</p>
+
+    <p><strong>Priority:</strong> ${repair.priority || "Low"}</p>
+
+    <p><strong>Progress:</strong> ${repair.progress || 0}%</p>
+   
+
+<div style="
+    width:100%;
+    background:#e5e7eb;
+    border-radius:10px;
+    height:14px;
+    overflow:hidden;
+    margin-bottom:18px;
+">
+    <div style="
+        width:${repair.progress || 0}%;
+        background:#2563eb;
+        height:100%;
+    "></div>
+</div>
+
+    <p><strong>Technician:</strong> ${repair.technician || "Not assigned yet"}</p>
+${repair.photo ? `
+    <h3>Reported Photo</h3>
+    <img
+        src="http://localhost:3000${repair.photo}"
+        style="
+            max-width:300px;
+            border-radius:10px;
+            margin-top:10px;
+            margin-bottom:20px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.15);
+        "
+    >
+` : ""}
+${repair.history && repair.history.length > 0 ? `
+    <h3>Repair History</h3>
+    ${repair.history.map(item => `
+        <p>
+            <strong>${item.action}</strong><br>
+            ${new Date(item.timestamp).toLocaleString()}
+        </p>
+    `).join("")}
+` : ""}
+
+</div>
+`;
+}
+</script>
+
+</body>
+</html>
