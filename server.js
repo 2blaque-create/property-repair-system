@@ -433,6 +433,9 @@ app.get("/repairs/auto-assign-old", (req, res) => {
     res.status(500).json({ message: "Error auto-assigning old repairs" });
   }
 });
+      if (!fs.existsSync("uploads")) {
+  fs.mkdirSync("uploads", { recursive: true });
+}
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
