@@ -430,12 +430,12 @@ let currentPriorityFilter = "all";
 let currentPropertyFilter = "all";
 
 async function loadSuppliers() {
-    const res = await fetch("http://localhost:3000/suppliers.json");
+    const res = await fetch("/suppliers.json")
     suppliers = await res.json();
 }
 
 async function loadRepairs() {
-    const res = await fetch("http://localhost:3000/repairs");
+    const res = await fetch("/repairs");
     repairs = await res.json();
 
     updateSummary();
