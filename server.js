@@ -112,7 +112,9 @@ function getSupplierByTrade(trade) {
 
 const app = express();
 
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static("uploads", {
+  fallthrough: false
+}));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 function findRepairById(repairs, repairId) {
