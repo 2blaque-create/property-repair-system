@@ -422,6 +422,33 @@ renderJobs(jobs);
             }).join("");
         }
 
+        async function saveQuotation(event, repairId) {
+    event.preventDefault();
+
+    const amount = document.getElementById(`quote-amount-${repairId}`).value;
+    const notes = document.getElementById(`quote-notes-${repairId}`).value;
+    const fileInput = document.getElementById(`quote-file-${repairId}`);
+
+    const formData = new FormData();
+    formData.append("quotation_amount", amount);
+    formData.append("quotation_notes", notes);
+
+    if (fileInput.files.length > 0) {
+        formData.append("quote_file", fileInput.files[0]);
+    }
+
+    const res = await fetch(`/repairs/${repairId}/quotation`, {
+        method: "PUT",
+        body: formData
+    });
+
+    if (res.ok) {
+        alert("Quotation submitted");
+        loadJobs();
+    } else {
+        alert("Error submitting quotation");
+    }
+}
         async function updateStatus(id, status) {
             try {
                 await fetch(`http://localhost:3000/repairs/${id}/status`, {
