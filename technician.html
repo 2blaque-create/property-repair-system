@@ -344,8 +344,10 @@ renderJobs(jobs);
                         </div>
 
                         <div class="section">
-                            <span class="label">Workflow Timeline:</span>
+                            <details>
+                            <summary>📋 Workflow Timeline</summary>
                             ${renderTimeline(r)}
+                            </details>
                         </div>
 
                         <div class="section"><span class="label">Address:</span> ${r.address || "-"}</div>
@@ -355,7 +357,19 @@ renderJobs(jobs);
                         <div class="section"><span class="label">Availability Date:</span> ${r.availability_date || "-"}</div>
                         <div class="section"><span class="label">Availability Time:</span> ${r.availability_time || "-"}</div>
 
-                        ${r.photo ? `<div class="section"><img src="${r.photo}" alt="Repair photo" onclick="window.open('${r.photo}','_blank')"></div>` : ""}
+                        ${r.photo ? `
+                        <details>
+                        <summary>📷 Repair Photo</summary>
+
+                        <div class="section">
+                        <img src="${r.photo}"
+                        alt="Repair photo"
+                        onclick="window.open('${r.photo}','_blank')"
+                         style="max-width:250px;cursor:pointer;">
+                        </div>
+
+                        </details>
+                        ` : ""}
 
                         <details>
                         <summary>📝 Technician Response</summary>
