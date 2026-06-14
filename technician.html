@@ -357,6 +357,9 @@ renderJobs(jobs);
 
                         ${r.photo ? `<div class="section"><img src="${r.photo}" alt="Repair photo" onclick="window.open('${r.photo}','_blank')"></div>` : ""}
 
+                        <details>
+                        <summary>📝 Technician Response</summary>
+
                         <div class="box">
                             <div class="label">Response</div>
                             <select id="response-${r.repair_id}">
@@ -373,6 +376,9 @@ renderJobs(jobs);
 
                             <button onclick="saveResponse('${r.repair_id}')">Save Response</button>
                         </div>
+                        </details>
+                        <details>
+                        <summary>👷 Visit Confirmation</summary>
 
                         <div class="box">
                             <div class="label">Visit Confirmation</div>
@@ -391,20 +397,26 @@ renderJobs(jobs);
                             <button type="button" onclick="saveVisit('${r.repair_id}')">Save Visit</button>
                         </div>
 
-                       <div class="box">
+                        <details>
+                        <summary>💰 Quotation</summary>
+
+                        <div class="box">
                         <div class="label">Quotation Amount</div>
                         <input type="text" id="quote-amount-${r.repair_id}" placeholder="Quote Amount (USD)" value="${r.quotation_amount || ""}" />
 
                         <div class="label">Quotation Notes</div>
                         <textarea id="quote-notes-${r.repair_id}" placeholder="Explain work required">${r.quotation_notes || ""}</textarea>
-
+                        
                         <input type="file" id="quote-file-${r.repair_id}" />
 
                         <button type="button" onclick="saveQuotation(event, '${r.repair_id}')">
                             Submit Quotation
                         </button>
 
-                    <div class="box">
+                        </div>
+                        </details>
+
+                        <div class="box">
                         <div class="label">Current Quote Status</div>
                         <div>${r.quotation_status || "-"}</div>
                         <div class="section"><span class="label">Landlord Notes:</span> ${r.landlord_notes || "-"}</div>
