@@ -762,6 +762,7 @@ document.getElementById("financialSummary").innerHTML = `
             </td>
         `;
 
+        const photoCell = document.createElement("td");
         const photoUrl = r.photo || r.photo_url || r.image || "";
 
 if (photoUrl) {
