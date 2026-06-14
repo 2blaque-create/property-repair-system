@@ -146,7 +146,7 @@
     <div id="jobs"></div>
 
     <script>
-        const technician = new URLSearchParams(window.location.search).get("name");
+        const technician = new URLSearchParams(window.location.search).get("technician");
 
         document.getElementById("techName").innerText =
             (technician || "Technician") + " – Assigned Repairs";
