@@ -287,7 +287,7 @@
 
         async function loadJobs() {
             try {
-                const res = await fetch("http://localhost:3000/repairs");
+                const res = await fetch("/repairs")
                 const repairs = await res.json();
 
                const jobs = repairs.filter(r =>
@@ -355,7 +355,7 @@ renderJobs(jobs);
                         <div class="section"><span class="label">Availability Date:</span> ${r.availability_date || "-"}</div>
                         <div class="section"><span class="label">Availability Time:</span> ${r.availability_time || "-"}</div>
 
-                        ${r.photo ? `<div class="section"><img src="http://localhost:3000${r.photo}" alt="Repair photo" onclick="window.open('http://localhost:3000${r.photo}', '_blank')"></div>` : ""}
+                        ${r.photo ? `<div class="section"><img src="${r.photo}" alt="Repair photo" onclick="window.open('${r.photo}','_blank')"></div>` : ""}
 
                         <div class="box">
                             <div class="label">Response</div>
@@ -451,7 +451,7 @@ renderJobs(jobs);
 }
         async function updateStatus(id, status) {
             try {
-                await fetch(`http://localhost:3000/repairs/${id}/status`, {
+                fetch(`/repairs/${id}/status`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ status })
@@ -469,7 +469,7 @@ renderJobs(jobs);
             const technician_notes = document.getElementById(`notes-${repairId}`).value;
 
             try {
-                await fetch(`http://localhost:3000/repairs/${repairId}/response`, {
+                await fetch(`/repairs/${repairId}/response`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ response, confirmed_time, technician_notes })
@@ -487,7 +487,7 @@ renderJobs(jobs);
             const visit_notes = document.getElementById(`visit-notes-${repairId}`).value;
 
             try {
-                await fetch(`http://localhost:3000/repairs/${repairId}/visit`, {
+                await fetch(`/repairs/${repairId}/visit`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ visit_confirmed, visit_time, visit_notes })
@@ -513,7 +513,7 @@ renderJobs(jobs);
             formData.append("quotation_notes", quotation_notes);
             if (file) formData.append("quote_file", file);
 
-            await fetch(`http://localhost:3000/repairs/${repairId}/quotation`, {
+            await fetch(`/repairs/${repairId}/quotation`, {
                 method: "PUT",
                 body: formData
             });
