@@ -762,15 +762,19 @@ document.getElementById("financialSummary").innerHTML = `
             </td>
         `;
 
-        const photoCell = document.createElement("td");
-        if (r.photo) {
-            const img = document.createElement("img");
-            img.src = "http://localhost:3000" + r.photo;
-            img.onclick = () => window.open(img.src, "_blank");
-            photoCell.appendChild(img);
-        } else {
-            photoCell.textContent = "No photo";
-        }
+        const photoUrl = r.photo || r.photo_url || r.image || "";
+
+if (photoUrl) {
+  const img = document.createElement("img");
+  img.src = photoUrl.startsWith("http") ? photoUrl : photoUrl;
+  img.style.width = "60px";
+  img.style.height = "60px";
+  img.style.objectFit = "cover";
+  img.onclick = () => window.open(img.src, "_blank");
+  photoCell.appendChild(img);
+} else {
+  photoCell.textContent = "No photo";
+}
         row.appendChild(photoCell);
 
         const quoteFileCell = document.createElement("td");
