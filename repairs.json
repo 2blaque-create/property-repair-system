@@ -760,8 +760,26 @@
       {
         "action": "Repair submitted",
         "timestamp": "2026-05-26T19:57:20.850Z"
+      },
+      {
+        "action": "Assigned to FixPro Handyman",
+        "timestamp": "2026-06-12T18:57:36.966Z"
+      },
+      {
+        "action": "Assigned to BuildRight Maintenance",
+        "timestamp": "2026-06-12T19:03:24.884Z"
       }
-    ]
+    ],
+    "response": "",
+    "confirmed_time": "",
+    "technician_notes": "",
+    "visit_confirmed": "",
+    "visit_time": "",
+    "visit_notes": "",
+    "quotation_amount": "",
+    "quotation_notes": "",
+    "quotation_status": "",
+    "landlord_notes": ""
   },
   {
     "repair_id": "RPR-2026-0002",
@@ -784,13 +802,106 @@
     "designation": "tenant ",
     "contact_phone": "+263773402513",
     "photo": "/uploads/1779912417239-IMG_8409.jpeg",
-    "status": "Assigned",
+    "status": "In Progress",
+    "progress": 45,
     "created_at": "2026-05-27T20:06:57.260Z",
     "technician": "Bright Spark Electrical",
     "history": [
       {
         "action": "Repair submitted",
         "timestamp": "2026-05-27T20:06:57.354Z"
+      },
+      {
+        "action": "Technician assigned",
+        "timestamp": "2026-05-28T08:30:00.000Z"
+      },
+      {
+        "action": "Work started",
+        "timestamp": "2026-05-29T09:00:00.000Z"
+      },
+      {
+        "action": "Technician response: Accepted",
+        "timestamp": "2026-05-31T19:27:19.315Z"
+      },
+      {
+        "action": "Confirmed time: 1/06/2026",
+        "timestamp": "2026-05-31T19:27:19.317Z"
+      },
+      {
+        "action": "Technician note added",
+        "timestamp": "2026-05-31T19:27:19.317Z"
+      },
+      {
+        "action": "Visit status: Visited",
+        "timestamp": "2026-05-31T19:27:53.846Z"
+      },
+      {
+        "action": "Visit time: 1300hrs ",
+        "timestamp": "2026-05-31T19:27:53.846Z"
+      },
+      {
+        "action": "Visit note added",
+        "timestamp": "2026-05-31T19:27:53.846Z"
+      },
+      {
+        "action": "Quotation file uploaded",
+        "timestamp": "2026-05-31T19:29:40.170Z"
+      },
+      {
+        "action": "Quotation submitted ($200)",
+        "timestamp": "2026-05-31T19:29:40.172Z"
+      },
+      {
+        "action": "Quotation approved by landlord. Notes: -",
+        "timestamp": "2026-06-03T19:48:33.946Z"
+      }
+    ],
+    "response": "Accepted",
+    "confirmed_time": "1/06/2026",
+    "technician_notes": "go on manual ",
+    "visit_confirmed": "Visited",
+    "visit_time": "1300hrs ",
+    "visit_notes": "need to replace the motor ",
+    "quotation_amount": "200",
+    "quotation_notes": "",
+    "quotation_status": "Approved",
+    "quotation_file": "/uploads/1780255780156-Business price quotation1.xlsx",
+    "landlord_notes": ""
+  },
+  {
+    "repair_id": "RPR-2026-0003",
+    "property_type": "Complex",
+    "property_name": "Arcturus Road",
+    "address": "2 Arcturus Road, Highlands",
+    "unit_number": "42",
+    "landlord_name": "Lavender",
+    "landlord_phone": "+263719226861",
+    "agent_name": "Lavender",
+    "agent_phone": "+263719226861",
+    "caretaker_name": "Ali",
+    "caretaker_phone": "+263719226861",
+    "quotation_status": "",
+    "quotation_amount": "",
+    "quotation_notes": "",
+    "quote_file": "",
+    "landlord_decision": "",
+    "landlord_notes": "",
+    "trade": "plumbing",
+    "description": "Leak ",
+    "priority": "Low",
+    "availability_date": "2026-06-14",
+    "availability_time": "",
+    "contact_name": "Lavender ",
+    "designation": "Tenant ",
+    "contact_phone": "0773402513",
+    "photo": "/uploads/1781374519459-IMG_0447.jpeg",
+    "status": "Assigned",
+    "created_at": "2026-06-13T18:15:19.506Z",
+    "technician": "Moyo Plumbing",
+    "history": [
+      {
+        "action": "Repair submitted",
+        "timestamp": "2026-06-13T18:15:19.600Z"
       }
     ]
   }

@@ -343,6 +343,9 @@ renderJobs(jobs);
                             </div>
                         </div>
 
+                        <details>
+                        <summary>🔎 View Details</summary>
+
                         <div class="section">
                             <details>
                             <summary>📋 Workflow Timeline</summary>
@@ -443,6 +446,7 @@ renderJobs(jobs);
                             <option value="Completed" ${r.status === "Completed" ? "selected" : ""}>Completed</option>
                         </select>
                     </div>
+                    </details>
                     </div>
                 `;
             }).join("");
