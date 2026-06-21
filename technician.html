@@ -146,7 +146,7 @@
     <div id="jobs"></div>
 
     <script>
-        const technician = new URLSearchParams(window.location.search).get("technician");
+        const technician = new URLSearchParams(window.location.search).get("name");
 
         document.getElementById("techName").innerText =
             (technician || "Technician") + " – Assigned Repairs";
@@ -290,16 +290,20 @@
                 const res = await fetch("/repairs")
                 const repairs = await res.json();
 
-               const jobs = repairs.filter(r =>
-                    (r.technician || "").trim().toLowerCase() === (technician || "").trim().toLowerCase() &&
-                    (r.status || "").trim().toLowerCase() !== "completed"
-                );      
+               const techName = (technician || "").trim().toLowerCase();
 
+                const jobs = repairs.filter(r => {
+                const repairTech = (r.technician || "").trim().toLowerCase();
+                const status = (r.status || "").trim().toLowerCase();
+
+                return status !== "completed" &&
+                (!techName || repairTech.includes(techName) || techName.includes(repairTech));
+                });
                 console.log("technician from URL:", technician);
                 console.log("all repairs:", repairs);
             console.log("filtered jobs:", jobs);
 
-renderJobs(jobs);
+            renderJobs(jobs);
              } catch (error) {
                  console.error("Error loading jobs:", error);
                  document.getElementById("jobs").innerHTML = "Error loading jobs";
