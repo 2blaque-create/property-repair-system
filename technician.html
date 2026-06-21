@@ -152,12 +152,14 @@
             (technician || "Technician") + " – Assigned Repairs";
 
         function calculateProgress(r) {
-            console.log("STATUS:", r.status);
-            console.log("RESPONSE:", r.response);
-            console.log("VISIT:", r.visit_confirmed);
-            console.log("QUOTE:", r.quotation_amount);
-            console.log("QUOTE STATUS:", r.quotation_status);   
-
+            console.log("PROGRESS DEBUG:", {
+                repairId: r.repair_id,
+                status: r.status,
+                response: r.response,
+                visit: r.visit_confirmed,
+                quote: r.quotation_amount,
+                quoteStatus: r.quotation_status
+            });
             let percent = 10;
             let stage = "progress-new";
 
