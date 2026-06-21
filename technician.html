@@ -152,60 +152,51 @@
             (technician || "Technician") + " – Assigned Repairs";
 
         function calculateProgress(r) {
-            console.log("PROGRESS DEBUG:", {
-                repairId: r.repair_id,
-                status: r.status,
-                response: r.response,
-                visit: r.visit_confirmed,
-                quote: r.quotation_amount,
-                quoteStatus: r.quotation_status
-            });
-            let percent = 10;
-            let stage = "progress-new";
+  const status = (r.status || "").trim().toLowerCase();
+  const response = (r.response || "").trim().toLowerCase();
+  const visit = (r.visit_confirmed || "").trim().toLowerCase();
+  const quoteStatus = (r.quotation_status || "").trim().toLowerCase();
 
-            if (r.status === "Assigned") {
-                percent = 30;
-                stage = "progress-assigned";
-            }
+  let percent = 10;
+  let stage = "progress-new";
 
-            if ((r.response || "").trim().toLowerCase() === "accepted") {
-                percent = 45;
-                stage = "progress-accepted";
-            }
+  if (status === "assigned") {
+    percent = 30;
+    stage = "progress-assigned";
+  }
 
-            if (r.visit_confirmed === "Visited") {
-                percent = 60;
-                stage = "progress-visited";
-            }
+  if (response === "accepted") {
+    percent = 45;
+    stage = "progress-accepted";
+  }
 
-            if (r.quotation_amount) {
-                percent = 75;
-                stage = "progress-quote";
-            }
+  if (visit === "visited") {
+    percent = 60;
+    stage = "progress-visited";
+  }
 
-            if (r.quotation_status === "Approved" || r.status === "In Progress") {
-                percent = 90;
-                stage = "progress-approved";
-            }
+  if (r.quotation_amount) {
+    percent = 75;
+    stage = "progress-quote";
+  }
 
-            if (r.status === "Completed") {
-                percent = 100;
-                stage = "progress-completed";
-            }
+  if (quoteStatus === "approved" || status === "in progress") {
+    percent = 90;
+    stage = "progress-approved";
+  }
 
-            if (r.quotation_status === "Declined") {
-                percent = 100;
-                stage = "progress-declined";
-            }
+  if (status === "completed") {
+    percent = 100;
+    stage = "progress-completed";
+  }
 
-            console.log("FINAL PROGRESS:", {
-            repairId: r.repair_id,
-            percent,
-            stage
-        });
+  if (quoteStatus === "declined") {
+    percent = 100;
+    stage = "progress-declined";
+  }
 
-            return { percent, stage };
-        }
+  return { percent, stage };
+}
 
         function getTimelineSteps(r) {
             const steps = [
