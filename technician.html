@@ -198,6 +198,12 @@
                 stage = "progress-declined";
             }
 
+            console.log("FINAL PROGRESS:", {
+            repairId: r.repair_id,
+            percent,
+            stage
+        });
+
             return { percent, stage };
         }
 
