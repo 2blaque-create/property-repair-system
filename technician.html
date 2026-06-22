@@ -394,9 +394,16 @@
                                 <option value="Declined" ${r.response === "Declined" ? "selected" : ""}>Declined</option>
                             </select>
 
-                            <div class="label">Confirmed Time</div>
-                            <input type="text" id="time-${r.repair_id}" placeholder="e.g. 18/03/2026 13:00" value="${r.confirmed_time || ""}">
+                           <div class="label">Confirmed Date</div>
+                            <input type="date"
+                            id="response-date-${r.repair_id}"
+                            value="${r.response_date || ''}">
 
+                            <div class="label">Confirmed Time</div>
+                            <input type="time"
+                            id="response-time-${r.repair_id}"
+                            value="${r.response_time || ''}">
+                            
                             <div class="label">Additional Information</div>
                             <textarea id="notes-${r.repair_id}" placeholder="Add notes here">${r.technician_notes || ""}</textarea>
 
@@ -423,7 +430,7 @@
                             <input type="time"
                                     id="visit-time-${r.repair_id}"
                                     value="${r.visit_time || ''}">
-                                    
+
                             <div class="label">Visit Notes</div>
                             <textarea id="visit-notes-${r.repair_id}" placeholder="What did you find?">${r.visit_notes || ""}</textarea>
 
@@ -511,14 +518,20 @@
 
         async function saveResponse(repairId) {
             const response = document.getElementById(`response-${repairId}`).value;
-            const confirmed_time = document.getElementById(`time-${repairId}`).value;
+            const response_date = document.getElementById(`response-date-${repairId}`).value;
+            const response_time = document.getElementById(`response-time-${repairId}`).value;
             const technician_notes = document.getElementById(`notes-${repairId}`).value;
 
             try {
                 await fetch(`/repairs/${repairId}/response`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ response, confirmed_time, technician_notes })
+                    body: JSON.stringify({
+                     response,
+                     response_date,
+                     response_time,
+                     technician_notes
+                })
                 });
 
                 loadJobs();
