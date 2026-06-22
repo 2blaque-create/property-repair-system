@@ -185,10 +185,10 @@
     stage = "progress-approved";
   }
 
-  if (status === "completed") {
-    percent = 100;
-    stage = "progress-completed";
-  }
+  if (status === "Completed" || r.completion_date || r.completion_notes) {
+  percent = 100;
+  stage = "progress-completed";
+}
 
   if (quoteStatus === "declined") {
     percent = 100;
@@ -440,6 +440,7 @@
                         <details>
                         <summary>💰 Quotation</summary>
 
+
                         <div class="box">
                         <div class="label">Quotation Amount</div>
                         <input type="text" id="quote-amount-${r.repair_id}" placeholder="Quote Amount (USD)" value="${r.quotation_amount || ""}" />
@@ -455,6 +456,35 @@
 
                         </div>
                         </details>
+                        
+                <details>
+                    <summary>🔨 Work Completion</summary>
+
+                 <div class="box">
+                <div class="label">Completion Date</div>
+                <input type="date"
+                 id="completion-date-${r.repair_id}"
+                value="${r.completion_date || ''}">
+
+                <div class="label">Completion Time</div>
+                <input type="time"
+                id="completion-time-${r.repair_id}"
+                value="${r.completion_time || ''}">
+
+                <div class="label">Work Done Summary</div>
+                <textarea id="completion-notes-${r.repair_id}"
+                 placeholder="Describe the work completed">${r.completion_notes || ''}</textarea>
+
+                <div class="label">Materials Used</div>
+                <textarea id="materials-used-${r.repair_id}"
+                placeholder="List materials used">${r.materials_used || ''}</textarea>
+
+                <button type="button"
+                 onclick="saveCompletion('${r.repair_id}')">
+                Save Completion
+                 </button>
+                </div>
+                </details>
 
                         <div class="box">
                         <div class="label">Current Quote Status</div>
@@ -502,6 +532,34 @@
         alert("Error submitting quotation");
     }
 }
+        async function saveCompletion(repairId) {
+  const completion_date = document.getElementById(`completion-date-${repairId}`).value;
+  const completion_time = document.getElementById(`completion-time-${repairId}`).value;
+  const completion_notes = document.getElementById(`completion-notes-${repairId}`).value;
+  const materials_used = document.getElementById(`materials-used-${repairId}`).value;
+
+  try {
+    await fetch(`/repairs/${repairId}/completion`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        completion_date,
+        completion_time,
+        completion_notes,
+        materials_used
+      })
+    });
+
+    alert("Completion saved");
+    loadJobs();
+
+  } catch (error) {
+    console.error("Error saving completion:", error);
+  }
+}
+
         async function updateStatus(id, status) {
             try {
                 fetch(`/repairs/${id}/status`, {
