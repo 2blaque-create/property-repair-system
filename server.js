@@ -814,7 +814,7 @@ app.put("/repairs/:repairId/visit", (req, res) => {
     try {
         const repairs = readRepairs();
         const repairId = req.params.repairId;
-        const { visit_confirmed, visit_time, visit_notes } = req.body;
+        const { visit_confirmed, visit_date, visit_time, visit_notes } = req.body;
 
         const repair = repairs.find(r => r.repair_id === repairId);
 
@@ -823,6 +823,7 @@ app.put("/repairs/:repairId/visit", (req, res) => {
         }
 
         repair.visit_confirmed = visit_confirmed || "";
+        repair.visit_date = visit_date || "";
         repair.visit_time = visit_time || "";
         repair.visit_notes = visit_notes || "";
 
