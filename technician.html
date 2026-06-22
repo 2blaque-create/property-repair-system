@@ -414,9 +414,16 @@
                                 <option value="Not Visited" ${r.visit_confirmed === "Not Visited" ? "selected" : ""}>Not Visited</option>
                             </select>
 
-                            <div class="label">Visit Time</div>
-                            <input type="text" id="visit-time-${r.repair_id}" placeholder="e.g. 18/03/2026 13:00" value="${r.visit_time || ""}">
+                            <div class="label">Visit Date</div>
+                            <input type="date"
+                                    id="visit-date-${r.repair_id}"
+                                    value="${r.visit_date || ''}">
 
+                            <div class="label">Visit Time</div>
+                            <input type="time"
+                                    id="visit-time-${r.repair_id}"
+                                    value="${r.visit_time || ''}">
+                                    
                             <div class="label">Visit Notes</div>
                             <textarea id="visit-notes-${r.repair_id}" placeholder="What did you find?">${r.visit_notes || ""}</textarea>
 
@@ -522,14 +529,15 @@
 
         async function saveVisit(repairId) {
             const visit_confirmed = document.getElementById(`visit-status-${repairId}`).value;
-            const visit_time = document.getElementById(`visit-time-${repairId}`).value;
+           const visit_date = document.getElementById(`visit-date-${repairId}`).value;
+           const visit_time = document.getElementById(`visit-time-${repairId}`).value;
             const visit_notes = document.getElementById(`visit-notes-${repairId}`).value;
 
             try {
                 await fetch(`/repairs/${repairId}/visit`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ visit_confirmed, visit_time, visit_notes })
+                    body: JSON.stringify({ visit_confirmed, visit_date, visit_time, visit_notes })
                 });
 
                 loadJobs();
