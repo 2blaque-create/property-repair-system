@@ -619,6 +619,7 @@
         }
 
         async function saveQuotation(event, repairId) {
+            alert("saveQuotation started");
             event.preventDefault();
 
             const quotation_amount = document.getElementById(`quote-amount-${repairId}`).value;
