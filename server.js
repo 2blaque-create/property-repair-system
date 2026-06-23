@@ -764,6 +764,7 @@ Technician: ${technician}
 
 Open job:
 https://property-repair-system.onrender.com/technician.html?id=${repair.repair_id}
+`
 );
 
         writeRepairs(repairs);
