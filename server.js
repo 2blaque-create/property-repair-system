@@ -782,7 +782,12 @@ app.put("/repairs/:repairId/response", (req, res) => {
     try {
         const repairs = readRepairs();
         const repairId = req.params.repairId;
-        const { response, confirmed_time, technician_notes } = req.body;
+       const {
+            response,
+            response_date,
+            response_time,
+            technician_notes
+      } = req.body;
 
         const repair = repairs.find(r => r.repair_id === repairId);
 
@@ -791,11 +796,16 @@ app.put("/repairs/:repairId/response", (req, res) => {
         }
 
         repair.response = response || "";
-        repair.confirmed_time = confirmed_time || "";
+        repair.response_date = response_date || "";
+        repair.response_time = response_time || "";
         repair.technician_notes = technician_notes || "";
 
         if (response) addHistory(repair, `Technician response: ${response}`);
-        if (confirmed_time) addHistory(repair, `Confirmed time: ${confirmed_time}`);
+        if (response_date)
+    addHistory(repair, `Confirmed date: ${response_date}`);
+
+        if (response_time)
+    addHistory(repair, `Confirmed time: ${response_time}`);
         if (technician_notes) addHistory(repair, `Technician note added`);
 
         writeRepairs(repairs);
@@ -811,6 +821,7 @@ app.put("/repairs/:repairId/response", (req, res) => {
 });
 
 app.put("/repairs/:repairId/visit", (req, res) => {
+        
     try {
         const repairs = readRepairs();
         const repairId = req.params.repairId;
@@ -841,6 +852,48 @@ app.put("/repairs/:repairId/visit", (req, res) => {
         console.error("Visit update error:", error);
         res.status(500).json({ message: "Error saving visit details" });
     }
+});
+
+        app.put("/repairs/:repairId/completion", (req, res) => {
+  try {
+    const repairs = readRepairs();
+    const repairId = req.params.repairId;
+
+    const {
+      completion_date,
+      completion_time,
+      completion_notes,
+      materials_used
+    } = req.body;
+
+    const repair = repairs.find(r => r.repair_id === repairId);
+
+    if (!repair) {
+      return res.status(404).json({ message: "Repair not found" });
+    }
+
+    repair.completion_date = completion_date || "";
+    repair.completion_time = completion_time || "";
+    repair.completion_notes = completion_notes || "";
+    repair.materials_used = materials_used || "";
+    repair.status = "Completed";
+
+    if (completion_date) addHistory(repair, `Completion date: ${completion_date}`);
+    if (completion_time) addHistory(repair, `Completion time: ${completion_time}`);
+    if (completion_notes) addHistory(repair, "Completion notes added");
+    if (materials_used) addHistory(repair, "Materials used added");
+
+    writeRepairs(repairs);
+
+    res.json({
+      message: "Completion saved successfully",
+      repair
+    });
+
+  } catch (error) {
+    console.error("Completion update error:", error);
+    res.status(500).json({ message: "Error saving completion" });
+  }
 });
 
     app.put("/repairs/:repairId/quotation", upload.single("quote_file"), (req, res) => {
