@@ -93,7 +93,7 @@
 async function trackRepair() {
     const ticket = document.getElementById("ticketNumber").value.trim();
 
-    const res = await fetch("http://localhost:3000/repairs");
+    const res = await fetch("/repairs");
     const repairs = await res.json();
 
     const repair = repairs.find(r =>
@@ -162,7 +162,7 @@ async function trackRepair() {
 ${repair.photo ? `
     <h3>Reported Photo</h3>
     <img
-        src="http://localhost:3000${repair.photo}"
+       src="${repair.photo}"
         style="
             max-width:300px;
             border-radius:10px;

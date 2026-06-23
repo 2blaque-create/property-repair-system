@@ -211,7 +211,7 @@
 
         async function loadRepairs() {
             try {
-                const res = await fetch("http://localhost:3000/repairs");
+                const res = await fetch("/repairs");
                 repairs = await res.json();
 
                 buildSummary();

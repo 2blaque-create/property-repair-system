@@ -141,7 +141,7 @@
   <script>
     async function loadSuppliers() {
       try {
-        const res = await fetch("http://localhost:3000/suppliers");
+        const res = await fetch("/suppliers");
         const suppliers = await res.json();
 
         const tbody = document.getElementById("suppliersTableBody");
@@ -176,7 +176,7 @@
       };
 
       try {
-        const res = await fetch("http://localhost:3000/suppliers", {
+        const res = await fetch("/suppliers", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"

@@ -1084,7 +1084,7 @@ function showToast(message) {
 
 async function updateStatus(id, status) {
     try {
-        await fetch(`http://localhost:3000/repairs/${id}/status`, {
+        await fetch(`/repairs/${id}/status`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status })
@@ -1097,7 +1097,7 @@ async function updateStatus(id, status) {
 
 async function updateTechnician(id, technician) {
     try {
-        await fetch(`http://localhost:3000/repairs/${id}/technician`, {
+        await fetch(`/repairs/${id}/technician`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ technician })
@@ -1144,7 +1144,7 @@ async function approveQuote(repairId) {
     const note = prompt("Optional note for technician:", "");
 
     try {
-        await fetch(`http://localhost:3000/repairs/${repairId}/quotation-decision`, {
+        await fetch(`/repairs/${repairId}/quotation-decision`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -1166,7 +1166,7 @@ async function declineQuote(repairId) {
     const note = prompt("Reason for declining quote:", "");
     
     try {
-        await fetch(`http://localhost:3000/repairs/${repairId}/quotation-decision`, {
+       await fetch(`/repairs/${repairId}/quotation-decision`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

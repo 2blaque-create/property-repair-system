@@ -763,7 +763,7 @@ Priority: ${repair.priority || "-"}
 Technician: ${technician}
 
 Open job:
-http://localhost:3000/technician.html?id=${repair.repair_id}`
+https://property-repair-system.onrender.com/technician.html?id=${repair.repair_id}
 );
 
         writeRepairs(repairs);
