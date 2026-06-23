@@ -506,7 +506,8 @@
         }
 
         async function saveQuotation(event, repairId) {
-    event.preventDefault();
+        alert("saveQuotation started");
+        event.preventDefault();
 
     const amount = document.getElementById(`quote-amount-${repairId}`).value;
     const notes = document.getElementById(`quote-notes-${repairId}`).value;
