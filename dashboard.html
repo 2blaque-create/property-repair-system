@@ -972,7 +972,11 @@ const photoHtml = repair.photo
                 <div class="detail-label">Quote Notes</div>
                 <div>${repair.quotation_notes || "-"}</div>
                 <div class="detail-label">Quote File</div>
-               <div>${repair.quotation_file ? `<a href="${repair.quotation_file}" download>Download Quote</a>` : "-"}</div>
+               <div>
+                ${repair.quotation_file
+                 ? `<a href="${repair.quotation_file.startsWith('/') ? repair.quotation_file : '/' + repair.quotation_file}" target="_blank">View Quote</a>`
+                 : "-"}
+                 </div>
 
                 <div class="detail-label">Completion Date</div>
                 <div>${repair.completion_date || "-"}</div>
