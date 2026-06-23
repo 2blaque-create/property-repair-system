@@ -1055,7 +1055,7 @@ function showToast(message) {
             const landlord_notes = document.getElementById(`landlord-notes-${repairId}`).value;
 
             try {
-                const res = await fetch(`http://localhost:3000/repairs/${repairId}/quote-decision`, {
+                const res = await fetch(`/repairs/${repairId}/quote-decision`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ decision, landlord_notes })
