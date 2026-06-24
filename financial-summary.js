@@ -110,15 +110,22 @@ async function loadFinancialSummary() {
         `)
         .join("");
 
-        const supplierContainer = document.getElementById("spendBySupplier");
+const supplierContainer = document.getElementById("spendBySupplier");
 
 supplierContainer.innerHTML = Object.entries(spendBySupplier)
   .sort((a, b) => b[1] - a[1])
   .map(([supplier, amount]) => `
-    <div class="property-card">
-      <h3>${supplier}</h3>
-      <p>Total approved supplier spend</p>
-      <h2>$${amount}</h2>
+    <div class="quote-card approved-card">
+      <div class="quote-header">
+        <div>
+          <h3>${supplier}</h3>
+          <p>Total approved supplier spend</p>
+        </div>
+
+        <div class="amount-badge">
+          $${amount}
+        </div>
+      </div>
     </div>
   `)
   .join("");
