@@ -68,6 +68,7 @@ async function loadFinancialSummary() {
 
     const spendByProperty = {};
     const spendBySupplier = {}; 
+    const spendByTrade = {};
 
 
     approved.forEach(repair => {
@@ -76,18 +77,26 @@ async function loadFinancialSummary() {
     const amount = Number(repair.quotation_amount || 0);
 
     const supplier = repair.technician || "Unassigned";
+    const trade = repair.trade || "Other";
 
     if (!spendBySupplier[supplier]) {
         spendBySupplier[supplier] = 0;
     }
 
     spendBySupplier[supplier] += amount;
+    
 
     if (!spendByProperty[property]) {
         spendByProperty[property] = 0;
     }
 
     spendByProperty[property] += amount;
+
+    if (!spendByTrade[trade]) {
+        spendByTrade[trade] = 0;
+    }
+     spendByTrade[trade] += amount; 
+
 
 });
 
@@ -129,6 +138,26 @@ supplierContainer.innerHTML = Object.entries(spendBySupplier)
     </div>
   `)
   .join("");
+
+  const tradeContainer = document.getElementById("spendByTrade");
+
+tradeContainer.innerHTML = Object.entries(spendByTrade)
+    .sort((a, b) => b[1] - a[1])
+    .map(([trade, amount]) => `
+        <div class="quote-card approved-card">
+            <div class="quote-header">
+                <div>
+                    <h3>${trade}</h3>
+                    <p>Total approved trade spend</p>
+                </div>
+
+                <div class="amount-badge">
+                    USD ${amount.toLocaleString()}
+                </div>
+            </div>
+        </div>
+    `)
+    .join("");
 }
 
 loadFinancialSummary();
