@@ -779,9 +779,23 @@ if (photoUrl) {
         row.appendChild(photoCell);
 
         const quoteFileCell = document.createElement("td");
-        quoteFileCell.innerHTML = r.quotation_file
-        ? `<a href="${r.quotation_file}" target="_blank">📄 View</a>`
-        : "—";
+        quoteFileCell.innerHTML =
+    r.quotation_file
+        ? `
+        <a href="${r.quotation_file}" target="_blank"
+           style="
+             background:#2563eb;
+             color:white;
+             padding:6px 12px;
+             border-radius:4px;
+             text-decoration:none;
+             display:inline-block;
+             font-size:12px;
+           ">
+           📄 View Quote
+        </a>
+        `
+        : "-";
         row.appendChild(quoteFileCell);
 
         const quoteStatusCell = document.createElement("td");
