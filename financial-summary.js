@@ -103,7 +103,7 @@ async function loadFinancialSummary() {
                     </div>
 
                     <div class="amount-badge">
-                        $${amount}
+                        USD ${amount.toLocaleString()}
                     </div>
                 </div>
             </div>
@@ -123,8 +123,8 @@ supplierContainer.innerHTML = Object.entries(spendBySupplier)
         </div>
 
         <div class="amount-badge">
-          $${amount}
-        </div>
+            USD ${amount.toLocaleString()}
+         </div>
       </div>
     </div>
   `)
