@@ -67,17 +67,29 @@ async function loadFinancialSummary() {
         `;
 
     const spendByProperty = {};
+    const spendBySupplier = {}; 
+
 
     approved.forEach(repair => {
-        const property = repair.property_name || "Unknown Property";
-        const amount = Number(repair.quotation_amount || 0);
 
-        if (!spendByProperty[property]) {
-            spendByProperty[property] = 0;
-        }
+    const property = repair.property_name || "Unknown Property";
+    const amount = Number(repair.quotation_amount || 0);
 
-        spendByProperty[property] += amount;
-    });
+    const supplier = repair.technician || "Unassigned";
+
+    if (!spendBySupplier[supplier]) {
+        spendBySupplier[supplier] = 0;
+    }
+
+    spendBySupplier[supplier] += amount;
+
+    if (!spendByProperty[property]) {
+        spendByProperty[property] = 0;
+    }
+
+    spendByProperty[property] += amount;
+
+});
 
     const spendContainer = document.getElementById("spendByProperty");
 
@@ -97,6 +109,19 @@ async function loadFinancialSummary() {
             </div>
         `)
         .join("");
+
+        const supplierContainer = document.getElementById("spendBySupplier");
+
+supplierContainer.innerHTML = Object.entries(spendBySupplier)
+  .sort((a, b) => b[1] - a[1])
+  .map(([supplier, amount]) => `
+    <div class="property-card">
+      <h3>${supplier}</h3>
+      <p>Total approved supplier spend</p>
+      <h2>$${amount}</h2>
+    </div>
+  `)
+  .join("");
 }
 
 loadFinancialSummary();
