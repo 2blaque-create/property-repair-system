@@ -1015,13 +1015,23 @@ const photoHtml = repair.photo
                <div class="detail-label">Landlord Decision</div>
 
 <div style="margin-top:10px;">
-    <button type="button" onclick="saveQuoteDecision('${repair.repair_id}','Approved')">
-        Approve Quote
-    </button>
+${
+    repair.quotation_status === "Approved"
+    ? `<span style="color:green;font-weight:bold;">✅ Quote Approved</span>`
+    : repair.quotation_status === "Declined"
+    ? `<span style="color:red;font-weight:bold;">❌ Quote Declined</span>`
+    : `
+        <button type="button"
+            onclick="saveQuoteDecision('${repair.repair_id}','Approved')">
+            Approve Quote
+        </button>
 
-    <button type="button" onclick="saveQuoteDecision('${repair.repair_id}','Declined')">
-        Decline Quote
-    </button>
+        <button type="button"
+            onclick="saveQuoteDecision('${repair.repair_id}','Declined')">
+            Decline Quote
+        </button>
+      `
+}
 </div>
 
         <div class="detail-section">
