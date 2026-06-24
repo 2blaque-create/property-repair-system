@@ -46,10 +46,25 @@ async function loadFinancialSummary() {
         </div>
 
         <div class="summary-card">
-            <h3>Lowest Repair</h3>
-            <h1>$${lowestRepair}</h1>
+        <h3>Lowest Repair</h3>
+        <h1>$${lowestRepair}</h1>
         </div>
-    `;
+
+        <div class="summary-card">
+        <h3>Completed Repairs</h3>
+        <h1>${repairs.filter(r => r.status === "Completed").length}</h1>
+        </div>
+
+        <div class="summary-card">
+        <h3>Outstanding Quotes</h3>
+        <h1>${repairs.filter(r => r.quotation_status === "Pending").length}</h1>
+        </div>
+
+        <div class="summary-card">
+        <h3>High Priority Repairs</h3>
+        <h1>${repairs.filter(r => r.priority === "High").length}</h1>
+        </div>
+        `;
 
     const spendByProperty = {};
 
