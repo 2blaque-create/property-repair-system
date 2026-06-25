@@ -69,6 +69,7 @@ async function loadFinancialSummary() {
     const spendByProperty = {};
     const spendBySupplier = {}; 
     const spendByTrade = {};
+    const monthlySpend = {};
 
 
     approved.forEach(repair => {
@@ -100,7 +101,16 @@ async function loadFinancialSummary() {
     }
      spendByTrade[trade] += amount; 
 
+    const month = new Date(repair.submitted_at).toLocaleString("default", {
+    month: "short",
+    year: "numeric"
+});
 
+if (!monthlySpend[month]) {
+    monthlySpend[month] = 0;
+}
+
+    monthlySpend[month] += amount;
 });
 
     const spendContainer = document.getElementById("spendByProperty");
@@ -161,6 +171,24 @@ tradeContainer.innerHTML = Object.entries(spendByTrade)
         </div>
     `)
     .join("");
-}
 
+    const monthlyContainer = document.getElementById("monthlySpend");
+
+monthlyContainer.innerHTML = Object.entries(monthlySpend)
+    .map(([month, amount]) => `
+        <div class="quote-card approved-card">
+            <div class="quote-header">
+                <div>
+                    <h3>${month}</h3>
+                    <p>Total approved monthly spend</p>
+                </div>
+
+                <div class="amount-badge">
+                    USD ${amount.toLocaleString()}
+                </div>
+            </div>
+        </div>
+    `)
+    .join("");
+}
 loadFinancialSummary();
