@@ -101,10 +101,19 @@ async function loadFinancialSummary() {
     }
      spendByTrade[trade] += amount; 
 
-    const month = new Date(repair.submitted_at).toLocaleString("default", {
-    month: "short",
-    year: "numeric"
-});
+    const repairDate =
+    repair.submitted_at ||
+    repair.created_at ||
+    repair.date ||
+    repair.history?.find(h => h.action?.includes("Repair submitted"))?.timestamp ||
+    repair.history?.find(h => h.action?.includes("Quotation submitted"))?.timestamp;
+
+const month = repairDate
+    ? new Date(repairDate).toLocaleString("default", {
+          month: "short",
+          year: "numeric"
+      })
+    : "Unknown";
 
 if (!monthlySpend[month]) {
     monthlySpend[month] = 0;
