@@ -77,7 +77,10 @@ async function loadFinancialSummary() {
     const amount = Number(repair.quotation_amount || 0);
 
     const supplier = repair.technician || "Unassigned";
-    const trade = repair.trade || "Other";
+    const trade =
+    repair.trade
+    ? repair.trade.charAt(0).toUpperCase() + repair.trade.slice(1).toLowerCase()
+    : "Other";
 
     if (!spendBySupplier[supplier]) {
         spendBySupplier[supplier] = 0;
