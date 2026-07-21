@@ -1,0 +1,264 @@
+<html>
+<head>
+  <title>Home | Property Management ZW</title>
+  <link rel="stylesheet" href="landlord-portal.css">
+</head>
+<body>
+
+<div class="layout">
+    <aside class="home-sidebar">
+    <h2>PM ZW</h2>
+    <p id="sidebarUser">Admin</p>
+
+    <nav>
+        <a href="home.html">🏠 Home</a>
+        <a href="dashboard.html">🔧 Repairs</a>
+        <a href="properties.html">🏢 Properties</a>
+        <a href="tenant-directory.html">👥 Tenants</a>
+        <a href="financial-summary.html">💰 Financials</a>
+        <a href="documents.html">📄 Documents</a>
+        <a href="suppliers.html">👷 Suppliers</a>
+        <a href="portfolio.html">📊 Portfolio</a>
+        <a href="#" onclick="logout()">🚪 Logout</a>
+    </nav>
+</aside>
+  <main class="main">
+
+    <div class="topbar">
+      <div>
+        <h1>Property Management Home</h1>
+       <p id="welcomeUser"></p>
+</div>
+
+<div>
+    <button onclick="logout()" class="btn-primary">
+        Logout
+    </button>
+</div>
+
+</div>
+<div class="summary-grid">
+    <div class="summary-card">
+        <h3>Open Repairs</h3>
+        <h1 id="openRepairsCount">0</h1>
+    </div>
+
+    <div class="summary-card">
+        <h3>High Priority</h3>
+        <h1 id="highPriorityCount">0</h1>
+    </div>
+
+    <div class="summary-card">
+        <h3>Active Repairs</h3>
+        <h1 id="inProgressCount">0</h1>
+    </div>
+
+    <div class="summary-card">
+        <h3>Completed</h3>
+        <h1 id="completedCount">0</h1>
+    </div>
+</div>
+
+<section class="activity-panel">
+    <div class="activity-header">
+        <div>
+            <h2>Recent Activity</h2>
+            <p>Latest repair and maintenance updates</p>
+        </div>
+
+        <a href="dashboard.html">View all repairs</a>
+    </div>
+
+    <div id="recentActivityList">
+        <p class="activity-empty">Loading recent activity...</p>
+    </div>
+</section>
+
+<h2>Management Modules</h2>
+<div class="dashboard-grid">
+
+    <div class="card" onclick="window.location.href='dashboard.html'">
+        <h3>🔧 Repairs</h3>
+        <p>Manage maintenance requests</p>
+    </div>
+
+    <div class="card" onclick="window.location.href='properties.html'">
+        <h3>🏠 Properties</h3>
+        <p>View all managed properties</p>
+    </div>
+
+    <div class="card" onclick="window.location.href='financial-summary.html'">
+        <h3>💰 Financial Summary</h3>
+        <p>Income & Expenses</p>
+    </div>
+
+    <div class="card" onclick="window.location.href='documents.html'">
+        <h3>📄 Documents</h3>
+        <p>Property files & leases</p>
+    </div>
+
+    <div class="card" onclick="window.location.href='suppliers.html'">
+        <h3>👷 Suppliers</h3>
+        <p>Contractors & suppliers</p>
+    </div>
+
+    <div class="card" onclick="window.location.href='tenant-directory.html'">
+        <h3>👥 Tenants</h3>
+        <p>Tenant Directory</p>
+    </div>
+
+    <div class="card" onclick="window.location.href='technician.html'">
+        <h3>🛠 Technician Jobs</h3>
+        <p>Assigned repairs</p>
+    </div>
+
+    <div class="card" onclick="window.location.href='portfolio.html'">
+        <h3>📊 Portfolio</h3>
+        <p>Portfolio Analytics</p>
+    </div>
+
+</div>
+    </main>
+</div>
+
+<script src="auth.js"></script>
+
+<script>
+  const user = JSON.parse(localStorage.getItem("currentUser"));
+
+  if (user) {
+    document.getElementById("welcomeUser").innerText =
+      "Welcome back, " + user.name + " | Role: " + user.role;
+  }
+
+  function logout() {
+    localStorage.removeItem("currentUser");
+    window.location.href = "login.html";
+  }
+
+function cleanActivityAction(action = "") {
+    return action
+        .replace(/\s*Notes:\s*-\s*$/i, "")
+        .replace(/\s*Notes:\s*undefined\s*$/i, "")
+        .replace(/\s*Notes:\s*null\s*$/i, "")
+        .trim();
+}
+
+function formatActivityTime(timestamp) {
+    const activityDate = new Date(timestamp);
+
+    if (Number.isNaN(activityDate.getTime())) {
+        return "";
+    }
+
+    const now = new Date();
+
+    const today = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+    );
+
+    const activityDay = new Date(
+        activityDate.getFullYear(),
+        activityDate.getMonth(),
+        activityDate.getDate()
+    );
+
+    const differenceInDays = Math.round(
+        (today - activityDay) / 86400000
+    );
+
+    const time = activityDate.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+
+    if (differenceInDays === 0) {
+        return `Today, ${time}`;
+    }
+
+    if (differenceInDays === 1) {
+        return `Yesterday, ${time}`;
+    }
+
+    return activityDate.toLocaleDateString([], {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    });
+}
+
+function getActivityType(action = "") {
+    const text = action.toLowerCase();
+
+    if (text.includes("completed")) {
+        return "completed";
+    }
+
+    if (text.includes("approved")) {
+        return "approved";
+    }
+
+    if (text.includes("submitted")) {
+        return "submitted";
+    }
+
+    if (text.includes("assigned")) {
+        return "assigned";
+    }
+
+    return "updated";
+}
+
+  async function loadDashboard() {
+    try {
+        const response = await fetch("/dashboard-summary");
+
+        if (!response.ok) {
+            throw new Error(`Unable to load dashboard: ${response.status}`);
+        }
+
+        const summary = await response.json();
+
+        document.getElementById("openRepairsCount").textContent = summary.openRepairs;
+        document.getElementById("highPriorityCount").textContent = summary.highPriority;
+        document.getElementById("inProgressCount").textContent = summary.activeRepairs;
+        document.getElementById("completedCount").textContent = summary.completed;
+
+        const activityResponse = await fetch("/recent-activity");
+const activities = await activityResponse.json();
+
+const activityContainer = document.getElementById("recentActivityList");
+
+activityContainer.innerHTML = "";
+
+activities.forEach(activity => {
+    activityContainer.innerHTML += `
+       <div class="activity-item activity-${getActivityType(activity.action)}">
+            <div class="activity-text">
+                <div class="activity-title">
+            <span class="activity-dot"></span>
+            <strong>${cleanActivityAction(activity.action)}</strong>
+            </div>
+                ${activity.property}
+            </div>
+
+            <div class="activity-time">
+               ${formatActivityTime(activity.timestamp)}
+            </div>
+        </div>
+    `;
+});
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+loadDashboard();
+
+</script>
+
+</body>
+</html>

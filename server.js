@@ -511,6 +511,84 @@ app.get("/repairs", (req, res) => {
     const repairs = readRepairs();
     res.json(repairs);
 });
+
+app.get("/dashboard-summary", (req, res) => {
+    try {
+        const repairs = readRepairs();
+
+        const openRepairs = repairs.filter(
+            repair => repair.status !== "Completed"
+        ).length;
+
+        const highPriority = repairs.filter(
+            repair =>
+                repair.priority === "High" &&
+                repair.status !== "Completed"
+        ).length;
+
+        const activeRepairs = repairs.filter(
+            repair =>
+                ["Assigned", "Accepted", "In Progress"].includes(repair.status)
+        ).length;
+
+        const completed = repairs.filter(
+            repair => repair.status === "Completed"
+        ).length;
+
+        res.json({
+            openRepairs,
+            highPriority,
+            activeRepairs,
+            completed
+        });
+    } catch (error) {
+        console.error("Dashboard summary error:", error);
+
+        res.status(500).json({
+            error: "Unable to load dashboard summary"
+        });
+    }
+});
+
+app.get("/recent-activity", (req, res) => {
+    try {
+        const repairs = readRepairs();
+
+        const activity = repairs
+            .flatMap(repair => {
+                const history = Array.isArray(repair.history)
+                    ? repair.history
+                    : [];
+
+                return history.map(item => ({
+                    repairId: repair.repair_id || repair.id || "Repair",
+                    property:
+                        repair.property_name ||
+                        repair.property ||
+                        repair.address ||
+                        "Property not specified",
+                    action: item.action || "Repair updated",
+                    timestamp: item.timestamp || ""
+                }));
+            })
+            .filter(item => item.timestamp)
+            .sort(
+                (a, b) =>
+                    new Date(b.timestamp).getTime() -
+                    new Date(a.timestamp).getTime()
+            )
+            .slice(0, 6);
+
+        res.json(activity);
+    } catch (error) {
+        console.error("Recent activity error:", error);
+
+        res.status(500).json({
+            error: "Unable to load recent activity"
+        });
+    }
+});
+
 app.get("/landlord-portal", (req, res) => {
     res.sendFile(
         path.join(__dirname, "landlord-portal.html")
