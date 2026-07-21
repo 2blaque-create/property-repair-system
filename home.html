@@ -200,6 +200,10 @@ function getActivityType(action = "") {
         return "approved";
     }
 
+    if (text.includes("quotation") || text.includes("quote")) {
+    return "quotation";
+}
+
     if (text.includes("submitted")) {
         return "submitted";
     }
@@ -234,14 +238,28 @@ const activityContainer = document.getElementById("recentActivityList");
 activityContainer.innerHTML = "";
 
 activities.forEach(activity => {
+    const activityType = getActivityType(activity.action);
+
+    const activityLabel = {
+    submitted: "New",
+    assigned: "Contractor",
+    approved: "Decision",
+    quotation: "Quote",
+    completed: "Closed",
+    updated: "Update"
+}[activityType] || "Update";
+
     activityContainer.innerHTML += `
        <div
-    class="activity-item activity-${getActivityType(activity.action)}"
+   class="activity-item activity-${activityType}"
     onclick="window.location.href='dashboard.html?repairId=${encodeURIComponent(activity.repairId)}'"
 >
             <div class="activity-text">
                 <div class="activity-title">
             <span class="activity-dot"></span>
+            <span class="activity-badge activity-badge-${activityType}">
+                ${activityLabel}
+            </span>
             <strong>${cleanActivityAction(activity.action)}</strong>
             </div>
                 ${activity.property}

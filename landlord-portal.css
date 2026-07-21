@@ -336,6 +336,48 @@ button:hover {
     background:#94a3b8;
     flex-shrink:0;
 }
+.activity-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    min-width: 72px;
+    text-align: center;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.activity-badge-submitted {
+    background-color: #fff7df;
+    color: #9a6700;
+}
+
+.activity-badge-assigned {
+    background-color: #eaf3ff;
+    color: #2563eb;
+}
+
+.activity-badge-approved {
+    background-color: #e8f8ef;
+    color: #238636;
+}
+
+.activity-badge-quotation {
+    background-color: #eef2ff;
+    color: #4338ca;
+}
+
+.activity-badge-completed {
+    background-color: #e6f7fa;
+    color: #167c88;
+}
+
+.activity-badge-updated {
+    background-color: #f3e8ff;
+    color: #7e22ce;
+}
 
 .activity-assigned .activity-dot{
     background:#60a5fa;
