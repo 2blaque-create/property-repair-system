@@ -235,7 +235,10 @@ activityContainer.innerHTML = "";
 
 activities.forEach(activity => {
     activityContainer.innerHTML += `
-       <div class="activity-item activity-${getActivityType(activity.action)}">
+       <div
+    class="activity-item activity-${getActivityType(activity.action)}"
+    onclick="window.location.href='dashboard.html?repairId=${encodeURIComponent(activity.repairId)}'"
+>
             <div class="activity-text">
                 <div class="activity-title">
             <span class="activity-dot"></span>

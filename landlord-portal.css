@@ -295,12 +295,16 @@ button:hover {
     align-items:center;
     padding:14px 0;
     border-bottom:1px solid #eef2f7;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
 }
 
 .activity-item:last-child{
     border-bottom:none;
 }
-
+.activity-item:hover {
+    background-color: #f8fafc;
+}
 .activity-text{
     color:#374151;
     line-height:1.5;

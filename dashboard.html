@@ -443,6 +443,31 @@ async function loadRepairs() {
     updateSupplierStats();
     updateOverdueAlerts();
     applyFilters();
+
+    const requestedRepairId = new URLSearchParams(
+    window.location.search
+).get("repairId");
+
+if (requestedRepairId) {
+    const targetRow = document.getElementById(
+        `repair-${requestedRepairId}`
+    );
+
+    if (targetRow) {
+        targetRow.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+
+        openModal(requestedRepairId);
+    }
+
+    window.history.replaceState(
+        {},
+        "",
+        window.location.pathname
+    );
+}
 }
 
 function updateSummary() {
@@ -719,6 +744,7 @@ document.getElementById("financialSummary").innerHTML = `
 
     list.forEach(r => {
         const row = document.createElement("tr");
+        row.id = `repair-${r.repair_id}`;
 
         if (r.priority === "High") row.classList.add("high-priority");
         if (r.priority === "Medium") row.classList.add("medium-priority");
