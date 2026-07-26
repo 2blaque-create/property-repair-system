@@ -476,7 +476,6 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(__dirname));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use("/uploads", express.static("uploads"));
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
@@ -993,7 +992,6 @@ app.put("/repairs/:repairId/visit", (req, res) => {
         repair.quotation_amount = quotation_amount;
         repair.quotation_notes = quotation_notes;
         repair.quotation_status = "Pending";
-
         if (req.file) {
     const newQuotationFile = "/uploads/" + req.file.filename;
 
