@@ -814,20 +814,44 @@ document.getElementById("financialSummary").innerHTML = `
         `;
 
         const photoCell = document.createElement("td");
-        const photoUrl = r.photo || r.photo_url || r.image || "";
+const photoPath = r.photo || r.photo_url || r.image || "";
 
-if (photoUrl) {
+if (photoPath) {
   const img = document.createElement("img");
-  img.src = photoUrl.startsWith("http") ? photoUrl : photoUrl;
+
   img.style.width = "60px";
   img.style.height = "60px";
   img.style.objectFit = "cover";
-  img.onclick = () => window.open(img.src, "_blank");
+  img.style.cursor = "pointer";
+
+  if (photoPath.startsWith("/uploads/") || photoPath.startsWith("http")) {
+    img.src = photoPath;
+  } else {
+    fetch(`/repairs/${encodeURIComponent(r.repair_id)}/photo-url`)
+      .then(res => {
+        if (!res.ok) throw new Error("Unable to get photo URL");
+        return res.json();
+      })
+      .then(data => {
+        img.src = data.url;
+      })
+      .catch(error => {
+        console.error("Photo load error:", error);
+        img.alt = "Photo unavailable";
+      });
+  }
+
+  img.onclick = () => {
+    const src = img.getAttribute("src");
+    if (src) window.open(src, "_blank");
+  };
+
   photoCell.appendChild(img);
 } else {
   photoCell.textContent = "No photo";
 }
-        row.appendChild(photoCell);
+
+row.appendChild(photoCell);
 
         const quoteFileCell = document.createElement("td");
        quoteFileCell.innerHTML = r.quotation_file

@@ -620,7 +620,7 @@ function generateRepairId(repairs) {
     return `RPR-${year}-${String(nextNumber).padStart(4, "0")}`;
 }
 
-app.post("/repairs", upload.single("photo"), (req, res) => {
+app.post("/repairs", supabaseUpload.single("photo"), async (req, res) => {
     try {
 
         const repairsFile = "./repairs.json";
@@ -641,8 +641,33 @@ app.post("/repairs", upload.single("photo"), (req, res) => {
             req.body.property_name.trim().toLowerCase()
       );
 
+      const repairId = generateRepairId(repairs);
+
+let photoPath = null;
+
+if (req.file) {
+  const safeFileName = req.file.originalname.replace(
+    /[^a-zA-Z0-9._-]/g,
+    "_"
+  );
+
+  photoPath =
+    `photos/${repairId}/${Date.now()}-${safeFileName}`;
+
+  const { error: photoUploadError } = await supabase.storage
+    .from("repair-files")
+    .upload(photoPath, req.file.buffer, {
+      contentType: req.file.mimetype,
+      upsert: false
+    });
+
+  if (photoUploadError) {
+    throw photoUploadError;
+  }
+}
+
         const newRepair = {
-            repair_id: generateRepairId(repairs),
+            repair_id: repairId,
 
             property_type: req.body.property_type,
             property_name: req.body.property_name,
@@ -677,7 +702,7 @@ app.post("/repairs", upload.single("photo"), (req, res) => {
             designation: req.body.designation,
             contact_phone: req.body.contact_phone,
 
-            photo: req.file ? `/uploads/${req.file.filename}` : null,
+            photo: photoPath,
 
             status: "Pending",
             created_at: new Date()
