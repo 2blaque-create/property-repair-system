@@ -841,10 +841,36 @@ if (photoPath) {
       });
   }
 
-  img.onclick = () => {
-    const src = img.getAttribute("src");
-    if (src) window.open(src, "_blank");
-  };
+img.onclick = async () => {
+  const photoWindow = window.open("", "_blank");
+
+  try {
+    if (photoPath.startsWith("/uploads/") || photoPath.startsWith("http")) {
+      photoWindow.location.href = photoPath;
+      return;
+    }
+
+    const res = await fetch(
+      `/repairs/${encodeURIComponent(r.repair_id)}/photo-url`
+    );
+
+    if (!res.ok) {
+      throw new Error("Unable to get fresh photo URL");
+    }
+
+    const data = await res.json();
+    photoWindow.location.href = data.url;
+
+  } catch (error) {
+    console.error("Photo open error:", error);
+
+    if (photoWindow) {
+      photoWindow.close();
+    }
+
+    alert("Unable to open photo");
+  }
+};
 
   photoCell.appendChild(img);
 } else {
