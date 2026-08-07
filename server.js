@@ -1062,7 +1062,55 @@ app.get("/repairs/:repairId/quotation-url", async (req, res) => {
     });
   }
 });
-    
+    app.get("/repairs/:repairId/photo-url", async (req, res) => {
+  try {
+    const repairs = readRepairs();
+    const repairId = req.params.repairId;
+
+    const repair = repairs.find(
+      r => r.repair_id === repairId
+    );
+
+    if (!repair) {
+      return res.status(404).json({
+        message: "Repair not found"
+      });
+    }
+
+    if (!repair.photo) {
+      return res.status(404).json({
+        message: "No photo available"
+      });
+    }
+
+    // Keep older locally stored photo links working on localhost
+    if (repair.photo.startsWith("/uploads/")) {
+      return res.json({
+        url: repair.photo
+      });
+    }
+
+    const { data, error } = await supabase.storage
+      .from("repair-files")
+      .createSignedUrl(repair.photo, 300);
+
+    if (error) {
+      throw error;
+    }
+
+    return res.json({
+      url: data.signedUrl
+    });
+
+  } catch (error) {
+    console.error("Signed photo URL error:", error);
+
+    return res.status(500).json({
+      message: "Unable to open photo"
+    });
+  }
+});
+
     app.put("/repairs/:repairId/quotation", supabaseUpload.single("quote_file"), async (req, res) => {
     try {
         const repairs = readRepairs();
