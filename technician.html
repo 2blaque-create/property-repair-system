@@ -617,38 +617,6 @@
             }
         }
 
-        async function saveQuotation(event, repairId) {
-            alert("saveQuotation started"); 
-            event.preventDefault();
-
-            const quotation_amount = document.getElementById(`quote-amount-${repairId}`).value;
-            const quotation_notes = document.getElementById(`quote-notes-${repairId}`).value;
-            const fileInput = document.getElementById(`quote-file-${repairId}`);
-            const file = fileInput.files[0];
-
-        try {
-            const formData = new FormData();
-            formData.append("quotation_amount", quotation_amount);
-            formData.append("quotation_notes", quotation_notes);
-            if (file) formData.append("quote_file", file);
-
-            const res = await fetch(`/repairs/${repairId}/quotation`, {
-  method: "PUT",
-  body: formData
-});
-
-if (res.ok) {
-  alert("Quotation submitted");
-  loadJobs();
-} else {
-  const errorText = await res.text();
-  alert("Error submitting quotation: " + errorText);
-}
-        } catch (error) {
-        console.error("Error saving quotation:", error);
-        }
-    }
-
     loadJobs();
     </script>
     </body>

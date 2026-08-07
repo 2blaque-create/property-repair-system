@@ -14,6 +14,15 @@ const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const { createClient } = require("@supabase/supabase-js");
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
+
+if (!supabaseUrl || !supabaseSecretKey) {
+  throw new Error("Missing SUPABASE_URL or SUPABASE_SECRET_KEY in .env");
+}
+
+const supabase = createClient(supabaseUrl, supabaseSecretKey);
 const suppliersFile = path.join(__dirname, "suppliers.json");
 const propertyDefaultsFile = path.join(__dirname, "property_defaults.json");
 const propertiesFile = path.join(__dirname, "properties.json");
@@ -449,6 +458,12 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+const supabaseUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 20 * 1024 * 1024
+  }
+});
 const PORT = 3000;
 
 const client = twilio(
@@ -974,8 +989,56 @@ app.put("/repairs/:repairId/visit", (req, res) => {
     res.status(500).json({ message: "Error saving completion" });
   }
 });
+app.get("/repairs/:repairId/quotation-url", async (req, res) => {
+  try {
+    const repairs = readRepairs();
+    const repairId = req.params.repairId;
 
-    app.put("/repairs/:repairId/quotation", upload.single("quote_file"), (req, res) => {
+    const repair = repairs.find(
+      r => r.repair_id === repairId
+    );
+
+    if (!repair) {
+      return res.status(404).json({
+        message: "Repair not found"
+      });
+    }
+
+    if (!repair.quotation_file) {
+      return res.status(404).json({
+        message: "No quotation file available"
+      });
+    }
+
+    // Keep older locally stored quotation links working.
+    if (repair.quotation_file.startsWith("/uploads/")) {
+      return res.json({
+        url: repair.quotation_file
+      });
+    }
+
+    const { data, error } = await supabase.storage
+      .from("repair-files")
+      .createSignedUrl(repair.quotation_file, 300);
+
+    if (error) {
+      throw error;
+    }
+
+    return res.json({
+      url: data.signedUrl
+    });
+
+  } catch (error) {
+    console.error("Signed quotation URL error:", error);
+
+    return res.status(500).json({
+      message: "Unable to open quotation"
+    });
+  }
+});
+    
+    app.put("/repairs/:repairId/quotation", supabaseUpload.single("quote_file"), async (req, res) => {
     try {
         const repairs = readRepairs();
         const repairId = req.params.repairId;
@@ -993,12 +1056,29 @@ app.put("/repairs/:repairId/visit", (req, res) => {
         repair.quotation_notes = quotation_notes;
         repair.quotation_status = "Pending";
         if (req.file) {
-    const newQuotationFile = "/uploads/" + req.file.filename;
+  const safeFileName = req.file.originalname.replace(
+    /[^a-zA-Z0-9._-]/g,
+    "_"
+  );
 
-    if (repair.quotation_file !== newQuotationFile) {
-        repair.quotation_file = newQuotationFile;
-        addHistory(repair, "Quotation file uploaded");
-    }
+  const newQuotationFile =
+    `quotations/${repairId}/${Date.now()}-${safeFileName}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("repair-files")
+    .upload(newQuotationFile, req.file.buffer, {
+      contentType: req.file.mimetype,
+      upsert: false
+    });
+
+  if (uploadError) {
+    throw uploadError;
+  }
+
+  if (repair.quotation_file !== newQuotationFile) {
+    repair.quotation_file = newQuotationFile;
+    addHistory(repair, "Quotation file uploaded");
+  }
 }
 const quoteMessage = `Quotation submitted ($${quotation_amount})`;
 

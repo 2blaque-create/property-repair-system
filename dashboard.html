@@ -625,6 +625,31 @@ function hideFullHistory(repairId) {
     document.getElementById(`short-history-${repairId}`).style.display = "block";
     document.getElementById(`full-history-${repairId}`).style.display = "none";
 }
+async function openQuotation(repairId) {
+  const quoteWindow = window.open("", "_blank");
+
+  try {
+    const res = await fetch(`/repairs/${repairId}/quotation-url`);
+
+    if (!res.ok) {
+      throw new Error("Unable to get quotation link");
+    }
+
+    const data = await res.json();
+
+    quoteWindow.location.href = data.url;
+
+  } catch (error) {
+    console.error("Open quotation error:", error);
+
+    if (quoteWindow) {
+      quoteWindow.close();
+    }
+
+    alert("Unable to open quotation");
+  }
+}
+
 function renderRepairs(list) {
 
     document.getElementById("recordCount").innerHTML =
@@ -805,23 +830,25 @@ if (photoUrl) {
         row.appendChild(photoCell);
 
         const quoteFileCell = document.createElement("td");
-        quoteFileCell.innerHTML =
-    r.quotation_file
-        ? `
-        <a href="${r.quotation_file}" target="_blank"
-           style="
-             background:#2563eb;
-             color:white;
-             padding:6px 12px;
-             border-radius:4px;
-             text-decoration:none;
-             display:inline-block;
-             font-size:12px;
-           ">
-           📄 View Quote
-        </a>
-        `
-        : "-";
+       quoteFileCell.innerHTML = r.quotation_file
+  ? `
+    <button
+      type="button"
+      onclick="openQuotation('${r.repair_id}')"
+      style="
+        background:#2563eb;
+        color:white;
+        padding:6px 12px;
+        border:none;
+        border-radius:4px;
+        cursor:pointer;
+        font-size:12px;
+      "
+    >
+      📄 View Quote
+    </button>
+  `
+  : "-";
         row.appendChild(quoteFileCell);
 
         const quoteStatusCell = document.createElement("td");
@@ -1235,9 +1262,13 @@ async function declineQuote(repairId) {
     } catch (error) {
         console.error("Error declining quote:", error);
     }
-}
+    }
+
 initDashboard();
 
 </script>
+
+<script src="auth.js"></script>
+
 </body>
 </html>
