@@ -367,6 +367,18 @@
       {
         "action": "Assigned to Moyo Plumbing",
         "timestamp": "2026-03-18T19:49:53.629Z"
+      },
+      {
+        "action": "Quotation file uploaded",
+        "timestamp": "2026-07-28T19:12:08.599Z"
+      },
+      {
+        "action": "Quotation submitted ($200)",
+        "timestamp": "2026-07-28T19:12:08.599Z"
+      },
+      {
+        "action": "Quotation file uploaded",
+        "timestamp": "2026-07-28T20:02:50.244Z"
       }
     ],
     "response": "",
@@ -375,10 +387,11 @@
     "visit_confirmed": "",
     "visit_time": "",
     "visit_notes": "",
-    "quotation_amount": "",
-    "quotation_notes": "",
-    "quotation_status": "",
-    "landlord_notes": ""
+    "quotation_amount": "200",
+    "quotation_notes": "need",
+    "quotation_status": "Pending",
+    "landlord_notes": "",
+    "quotation_file": "quotations/R1773693342538/1785268968334-QUOTATION.docx"
   },
   {
     "repair_id": "R1773693411187",
@@ -518,16 +531,25 @@
     "visit_confirmed": "",
     "visit_time": "",
     "visit_notes": "",
-    "quotation_amount": "",
+    "quotation_amount": "43",
     "quotation_notes": "",
-    "quotation_status": "",
+    "quotation_status": "Pending",
     "landlord_notes": "",
     "history": [
       {
         "action": "Repair submitted",
         "timestamp": "2026-04-04T17:15:37.497Z"
+      },
+      {
+        "action": "Quotation file uploaded",
+        "timestamp": "2026-07-28T19:05:26.571Z"
+      },
+      {
+        "action": "Quotation submitted ($43)",
+        "timestamp": "2026-07-28T19:05:26.573Z"
       }
-    ]
+    ],
+    "quotation_file": "quotations/R1775322937487/1785265524173-Bins_Quotation.pdf"
   },
   {
     "repair_id": "R1775323707693",
@@ -731,7 +753,8 @@
         "action": "Repair submitted",
         "timestamp": "2026-05-24T19:04:34.410Z"
       }
-    ]
+    ],
+    "repair_id": "RPR-2026-0004"
   },
   {
     "repair_id": "RPR-2026-0001",

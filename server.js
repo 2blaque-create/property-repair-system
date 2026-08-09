@@ -510,6 +510,43 @@ function writeRepairs(repairs) {
     fs.writeFileSync(repairsFile, JSON.stringify(repairs, null, 2));
 }
 
+async function readRepairsFromDb() {
+  const { data, error } = await supabase
+    .from("repairs")
+    .select("data")
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("Supabase read repairs error:", error);
+    throw error;
+  }
+
+  return (data || []).map(row => row.data);
+}
+
+async function writeRepairsToDb(repairs) {
+  if (!Array.isArray(repairs) || repairs.length === 0) {
+    return;
+  }
+
+  const rows = repairs.map(repair => ({
+    repair_id: repair.repair_id,
+    data: repair,
+    updated_at: new Date().toISOString()
+  }));
+
+  const { error } = await supabase
+    .from("repairs")
+    .upsert(rows, {
+      onConflict: "repair_id"
+    });
+
+  if (error) {
+    console.error("Supabase write repairs error:", error);
+    throw error;
+  }
+}
+
 function addHistory(repair, action) {
     if (!repair.history) {
         repair.history = [];
