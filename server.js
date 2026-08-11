@@ -558,14 +558,21 @@ function addHistory(repair, action) {
     });
 }
 
-app.get("/repairs", (req, res) => {
-    const repairs = readRepairs();
+app.get("/repairs", async (req, res) => {
+  try {
+    const repairs = await readRepairsFromDb();
     res.json(repairs);
+  } catch (error) {
+    console.error("GET /repairs database error:", error);
+    res.status(500).json({
+      message: "Unable to load repairs"
+    });
+  }
 });
 
-app.get("/dashboard-summary", (req, res) => {
+app.get("/dashboard-summary", async (req, res) => {
     try {
-        const repairs = readRepairs();
+        const repairs = await readRepairsFromDb();
 
         const openRepairs = repairs.filter(
             repair => repair.status !== "Completed"
