@@ -608,9 +608,9 @@ app.get("/dashboard-summary", async (req, res) => {
     }
 });
 
-app.get("/recent-activity", (req, res) => {
+app.get("/recent-activity", async (req, res) => {
     try {
-        const repairs = readRepairs();
+        const repairs = await readRepairsFromDb();
 
         const activity = repairs
             .flatMap(repair => {
