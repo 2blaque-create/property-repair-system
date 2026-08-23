@@ -84,11 +84,11 @@ function normalizeTrade(trade) {
     .trim();
 }
 
-function getSupplierByTrade(trade) {
+async function getSupplierByTrade(trade) {
   if (!trade) return null;
 
   const suppliers = readSuppliers();
-  const repairs = readRepairs();
+  const repairs = await readRepairsFromDb();
 
   const matchingSuppliers = suppliers.filter(
   (supplier) =>
@@ -210,7 +210,7 @@ app.post("/whatsapp-reply", async (req, res) => {
     const incomingMessage = (req.body.Body || "").trim();
     console.log("📩 Message:", incomingMessage);
 
-    const repairs = readRepairs();
+    const repairs = await readRepairsFromDb();
     const incoming = incomingMessage.toLowerCase();
     const repairIdMatch = incoming.match(/r\d+/i);
     const repairId = repairIdMatch ? repairIdMatch[0].toUpperCase() : "";
@@ -279,7 +279,7 @@ app.post("/whatsapp-reply", async (req, res) => {
       repair.status = "Accepted";
       repair.accepted_at = new Date().toISOString();
       addHistory(repair, "Technician response: Accepted");
-      writeRepairs(repairs);
+     await writeRepairsToDb(repairs);
 
       await notifyTenant(
         repair,
@@ -309,7 +309,7 @@ app.post("/whatsapp-reply", async (req, res) => {
   repair.completion.completion_photo = repair.completion.completion_photo || "";
 
   addHistory(repair, "Technician marked repair complete");
-  writeRepairs(repairs);
+ await writeRepairsToDb(repairs);
 
   await notifyTenant(
     repair,
@@ -335,7 +335,7 @@ app.post("/whatsapp-reply", async (req, res) => {
         repair.completed_at = new Date().toISOString();
 
         addHistory(repair, "Technician marked repair as completed");
-        writeRepairs(repairs);
+        await writeRepairsToDb(repairs);
 
         await notifyTenant(
           repair,
@@ -354,7 +354,7 @@ app.post("/whatsapp-reply", async (req, res) => {
       repair.status = "Declined";
       repair.declined_at = new Date().toISOString();
       addHistory(repair, "Technician response: Declined");
-      writeRepairs(repairs);
+     await writeRepairsToDb(repairs);
 
       replyMessage = `Repair ${repairId} marked as declined.`;
     } else if (command === "TIME") {
@@ -364,7 +364,7 @@ app.post("/whatsapp-reply", async (req, res) => {
         repair.confirmed_time = extraText;
         repair.status = "Time Proposed";
         addHistory(repair, `Technician proposed time: ${extraText}`);
-        writeRepairs(repairs);
+        await writeRepairsToDb(repairs);
 
         replyMessage = `Time updated for repair ${repairId}: ${extraText}`;
       }
@@ -375,7 +375,7 @@ app.post("/whatsapp-reply", async (req, res) => {
     repair.technician_notes = extraText;
     repair.status = repair.status || "Note Added";
     addHistory(repair, `Technician note: ${extraText}`);
-    writeRepairs(repairs);
+    await writeRepairsToDb(repairs);
 
     replyMessage = `Note added to repair ${repairId}.`;
   }
@@ -399,11 +399,11 @@ app.post("/whatsapp-reply", async (req, res) => {
 }
 });
 
-function autoAssignExistingRepairs() {
-  const repairs = readRepairs();
+async function autoAssignExistingRepairs() {
+  const repairs = await readRepairsFromDb();
   let updated = 0;
 
-  repairs.forEach((repair) => {
+  for (const repair of repairs) {
     if (repair.technician === "Unassigned" || repair.status === "New") {
 
       const defaultSupplierName = getPropertyDefaultSupplier(
@@ -416,7 +416,7 @@ function autoAssignExistingRepairs() {
         repair.status = "Assigned";
         updated++;
       } else {
-        const assignedSupplier = getSupplierByTrade(repair.trade);
+        const assignedSupplier = await getSupplierByTrade(repair.trade);
 
         if (assignedSupplier) {
           repair.technician = assignedSupplier.name;
@@ -425,15 +425,15 @@ function autoAssignExistingRepairs() {
         }
       }
     }
-  });
+  }
 
-  writeRepairs(repairs);
+  await writeRepairsToDb(repairs);
   return updated;
 }
 
-app.get("/repairs/auto-assign-old", (req, res) => {
+app.get("/repairs/auto-assign-old", async (req, res) => {
   try {
-    const updated = autoAssignExistingRepairs();
+    const updated = await autoAssignExistingRepairs();
 
     res.json({
       message: `${updated} old repair(s) auto-assigned successfully`
@@ -494,21 +494,6 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
-
-const repairsFile = path.join(__dirname, "repairs.json");
-
-function readRepairs() {
-    try {
-        const data = fs.readFileSync(repairsFile, "utf8");
-        return JSON.parse(data || "[]");
-    } catch (error) {
-        return [];
-    }
-}
-
-function writeRepairs(repairs) {
-    fs.writeFileSync(repairsFile, JSON.stringify(repairs, null, 2));
-}
 
 async function readRepairsFromDb() {
   const { data, error } = await supabase
@@ -667,14 +652,7 @@ function generateRepairId(repairs) {
 app.post("/repairs", supabaseUpload.single("photo"), async (req, res) => {
     try {
 
-        const repairsFile = "./repairs.json";
-
-        let repairs = [];
-
-        if (fs.existsSync(repairsFile)) {
-            const data = fs.readFileSync(repairsFile);
-            repairs = JSON.parse(data);
-        }
+        const repairs = await readRepairsFromDb();
         const properties = readProperties();
 
         const selectedProperty = properties.find(
@@ -755,7 +733,7 @@ const defaultSupplierName = getPropertyDefaultSupplier(
     newRepair.property_name,
     newRepair.trade
 );
-const assignedSupplier = getSupplierByTrade(newRepair.trade);
+const assignedSupplier = await getSupplierByTrade(newRepair.trade);
 
 if (defaultSupplierName) {
     newRepair.technician = defaultSupplierName;
@@ -802,7 +780,7 @@ NOTE ${newRepair.repair_id} Need ladder
         addHistory(newRepair, "Repair submitted");
 
         repairs.push(newRepair);
-        writeRepairs(repairs);
+        await writeRepairsToDb(repairs);
 
         res.json({
             message: "Repair submitted successfully",
@@ -856,9 +834,9 @@ app.post("/suppliers", (req, res) => {
   }
 });
 
-app.put("/repairs/:repairId/status", (req, res) => {
+app.put("/repairs/:repairId/status", async (req, res) => {
     try {
-        const repairs = readRepairs();
+        const repairs = await readRepairsFromDb();
         const repairId = req.params.repairId;
         const { status } = req.body;
 
@@ -871,7 +849,7 @@ app.put("/repairs/:repairId/status", (req, res) => {
         repair.status = status;
         addHistory(repair, `Status changed to ${status}`);
 
-        writeRepairs(repairs);
+        await writeRepairsToDb(repairs);
 
         res.json({
             message: "Status updated successfully",
@@ -885,7 +863,7 @@ app.put("/repairs/:repairId/status", (req, res) => {
 
 app.put("/repairs/:repairId/technician", async (req, res) => {
     try {
-        const repairs = readRepairs();
+        const repairs = await readRepairsFromDb();
         const repairId = req.params.repairId;
         const { technician } = req.body;
 
@@ -929,7 +907,7 @@ https://property-repair-system.onrender.com/technician.html?id=${repair.repair_i
 `
 );
 
-        writeRepairs(repairs);
+        await writeRepairsToDb(repairs);
 
         res.json({
             message: "Technician updated successfully",
@@ -941,9 +919,9 @@ https://property-repair-system.onrender.com/technician.html?id=${repair.repair_i
     }
 });
 
-app.put("/repairs/:repairId/response", (req, res) => {
+app.put("/repairs/:repairId/response", async (req, res) => {
     try {
-        const repairs = readRepairs();
+        const repairs = await readRepairsFromDb();
         const repairId = req.params.repairId;
        const {
             response,
@@ -971,7 +949,7 @@ app.put("/repairs/:repairId/response", (req, res) => {
     addHistory(repair, `Confirmed time: ${response_time}`);
         if (technician_notes) addHistory(repair, `Technician note added`);
 
-        writeRepairs(repairs);
+       await writeRepairsToDb(repairs);
 
         res.json({
             message: "Technician response saved successfully",
@@ -983,10 +961,10 @@ app.put("/repairs/:repairId/response", (req, res) => {
     }
 });
 
-app.put("/repairs/:repairId/visit", (req, res) => {
+app.put("/repairs/:repairId/visit", async (req, res) => {
         
     try {
-        const repairs = readRepairs();
+        const repairs = await readRepairsFromDb();
         const repairId = req.params.repairId;
         const { visit_confirmed, visit_date, visit_time, visit_notes } = req.body;
 
@@ -1005,7 +983,7 @@ app.put("/repairs/:repairId/visit", (req, res) => {
         if (visit_time) addHistory(repair, `Visit time: ${visit_time}`);
         if (visit_notes) addHistory(repair, `Visit note added`);
 
-        writeRepairs(repairs);
+       await writeRepairsToDb(repairs);
 
         res.json({
             message: "Visit details saved successfully",
@@ -1017,9 +995,9 @@ app.put("/repairs/:repairId/visit", (req, res) => {
     }
 });
 
-        app.put("/repairs/:repairId/completion", (req, res) => {
+        app.put("/repairs/:repairId/completion", async (req, res) => {
   try {
-    const repairs = readRepairs();
+    const repairs = await readRepairsFromDb();
     const repairId = req.params.repairId;
 
     const {
@@ -1046,7 +1024,7 @@ app.put("/repairs/:repairId/visit", (req, res) => {
     if (completion_notes) addHistory(repair, "Completion notes added");
     if (materials_used) addHistory(repair, "Materials used added");
 
-    writeRepairs(repairs);
+   await writeRepairsToDb(repairs);
 
     res.json({
       message: "Completion saved successfully",
@@ -1060,7 +1038,7 @@ app.put("/repairs/:repairId/visit", (req, res) => {
 });
 app.get("/repairs/:repairId/quotation-url", async (req, res) => {
   try {
-    const repairs = readRepairs();
+    const repairs = await readRepairsFromDb();
     const repairId = req.params.repairId;
 
     const repair = repairs.find(
@@ -1108,7 +1086,7 @@ app.get("/repairs/:repairId/quotation-url", async (req, res) => {
 });
     app.get("/repairs/:repairId/photo-url", async (req, res) => {
   try {
-    const repairs = readRepairs();
+    const repairs = await readRepairsFromDb();
     const repairId = req.params.repairId;
 
     const repair = repairs.find(
@@ -1157,7 +1135,7 @@ app.get("/repairs/:repairId/quotation-url", async (req, res) => {
 
     app.put("/repairs/:repairId/quotation", supabaseUpload.single("quote_file"), async (req, res) => {
     try {
-        const repairs = readRepairs();
+        const repairs = await readRepairsFromDb();
         const repairId = req.params.repairId;
         const { quotation_amount, quotation_notes } = req.body;
 
@@ -1206,7 +1184,7 @@ const alreadyLogged = (repair.history || []).some(
 if (!alreadyLogged) {
     addHistory(repair, quoteMessage);
 }
-       writeRepairs(repairs);
+      await writeRepairsToDb(repairs);
 
             res.json({
                 message: "Quotation saved successfully",
@@ -1220,7 +1198,7 @@ if (!alreadyLogged) {
       app.put("/repairs/:repairId/quote-decision", async (req, res) => {
 
     try {
-        const repairs = readRepairs();
+        const repairs = await readRepairsFromDb();
         const repairId = req.params.repairId;
         const { decision, landlord_notes } = req.body;
 
@@ -1231,6 +1209,7 @@ if (!alreadyLogged) {
         }
 
         repair.landlord_notes = landlord_notes || "";
+        repair.landlord_decision = decision;
 
        if (decision === "Approved") {
          repair.quotation_status = "Approved";
@@ -1281,7 +1260,7 @@ if (!alreadyLogged) {
             return res.status(400).json({ message: "Invalid decision" });
         }
 
-        writeRepairs(repairs);
+        await writeRepairsToDb(repairs);
 
         res.json({
             message: `Quotation ${decision.toLowerCase()} successfully`,
