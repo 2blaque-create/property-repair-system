@@ -194,29 +194,45 @@ button:hover {
 
     <script>
         const form = document.getElementById("repairForm");
+        let isSubmitting = false;
+        const submitButton = form.querySelector('button[type="submit"]');
 
         form.addEventListener("submit", async function (e) {
-            e.preventDefault();
+    e.preventDefault();
 
-            const formData = new FormData(form);
+    if (isSubmitting) return;
 
-            try {
-                const response = await fetch("/repairs", {
-                    method: "POST",
-                    body: formData
-                });
+    isSubmitting = true;
+    submitButton.disabled = true;
 
-                const result = await response.json();
-                document.getElementById("message").innerText = result.message;
+    const originalButtonText = submitButton.textContent;
+    submitButton.textContent = "Submitting...";
 
-                if (response.ok) {
-                    form.reset();
-                }
-            } catch (error) {
-                document.getElementById("message").innerText = "Error submitting repair";
-                console.error(error);
-            }
+    const formData = new FormData(form);
+
+    try {
+        const response = await fetch("/repairs", {
+            method: "POST",
+            body: formData
         });
+
+        const result = await response.json();
+        document.getElementById("message").innerText = result.message;
+
+        if (response.ok) {
+            form.reset();
+        }
+
+    } catch (error) {
+        document.getElementById("message").innerText = "Error submitting repair";
+        console.error(error);
+
+    } finally {
+        isSubmitting = false;
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonText;
+    }
+});
 
 async function loadProperties() {
     try {
