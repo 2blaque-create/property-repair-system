@@ -639,16 +639,18 @@ app.get("/landlord-portal", (req, res) => {
 });
 function generateRepairId(repairs) {
     const year = new Date().getFullYear();
+    const prefix = `RPR-${year}-`;
 
-    const yearlyRepairs = repairs.filter(r =>
-        r.repair_id && r.repair_id.startsWith(`RPR-${year}-`)
-    );
+    const numbers = repairs
+        .filter(r => r.repair_id && r.repair_id.startsWith(prefix))
+        .map(r => parseInt(r.repair_id.replace(prefix, ""), 10))
+        .filter(n => Number.isFinite(n));
 
-    const nextNumber = yearlyRepairs.length + 1;
+    const highestNumber = numbers.length ? Math.max(...numbers) : 0;
+    const nextNumber = highestNumber + 1;
 
-    return `RPR-${year}-${String(nextNumber).padStart(4, "0")}`;
+    return `${prefix}${String(nextNumber).padStart(4, "0")}`;
 }
-
 app.post("/repairs", supabaseUpload.single("photo"), async (req, res) => {
     try {
 
