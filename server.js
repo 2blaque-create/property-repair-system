@@ -212,7 +212,7 @@ app.post("/whatsapp-reply", async (req, res) => {
 
     const repairs = await readRepairsFromDb();
     const incoming = incomingMessage.toLowerCase();
-    const repairIdMatch = incoming.match(/r\d+/i);
+    const repairIdMatch = incoming.match(/(?:rpr-\d{4}-\d{4}|r\d+)/i);
     const repairId = repairIdMatch ? repairIdMatch[0].toUpperCase() : "";
 
     let command = "";
@@ -236,27 +236,27 @@ app.post("/whatsapp-reply", async (req, res) => {
 
 } else if (incoming.startsWith("time")) {
   command = "TIME";
-  extraText = incomingMessage.replace(/time\s+r\d+/i, "").trim();
+  extraText = incomingMessage.replace(/time\s+(?:rpr-\d{4}-\d{4}|r\d+)/i, "").trim();
 
 } else if (incoming.startsWith("complete")) {
   command = "COMPLETE";
 
 } else if (incoming.startsWith("note")) {
   command = "NOTE";
-  extraText = incomingMessage.replace(/note\s+r\d+/i, "").trim();
+  extraText = incomingMessage.replace(/note\s+(?:rpr-\d{4}-\d{4}|r\d+)/i, "").trim();
 }
 
     let replyMessage = "";
 
     if (!command) {
       replyMessage =
-        "Invalid format. Use ACCEPT R123, DECLINE R123, TIME R123 14:00, NOTE R123 your message, or COMPLETE R123.";
+      "Invalid format. Use ACCEPT RPR-2026-0009, DECLINE RPR-2026-0009, TIME RPR-2026-0009 14:00, NOTE RPR-2026-0009 your message, or COMPLETE RPR-2026-0009";
       console.log("📤 Reply:", replyMessage);
       return res.status(200).send("OK");
     }
 
     if (!repairId) {
-      replyMessage = "Please include repair ID like ACCEPT R123";
+      replyMessage = "Please include repair ID like ACCEPT RPR-2026-0009";
       console.log("📤 Reply:", replyMessage);
       return res.status(200).send("OK");
     }
