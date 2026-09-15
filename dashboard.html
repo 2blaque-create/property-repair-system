@@ -799,6 +799,7 @@ document.getElementById("financialSummary").innerHTML = `
                 <select onchange="updateStatus('${r.repair_id}', this.value)">
                     <option value="New" ${(r.status || "New") === "New" ? "selected" : ""}>New</option>
                     <option value="Assigned" ${r.status === "Assigned" ? "selected" : ""}>Assigned</option>
+                    <option value="Declined" ${r.status === "Declined" ? "selected" : ""}>Declined</option>
                     <option value="In Progress" ${r.status === "In Progress" ? "selected" : ""}>In Progress</option>
                     <option value="Completed" ${r.status === "Completed" ? "selected" : ""}>Completed</option>
                 </select>
