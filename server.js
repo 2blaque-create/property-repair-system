@@ -997,7 +997,13 @@ app.put("/repairs/:repairId/visit", async (req, res) => {
     }
 });
 
-        app.put("/repairs/:repairId/completion", async (req, res) => {
+        app.put(
+  "/repairs/:repairId/completion",
+  supabaseUpload.fields([
+    { name: "invoice_file", maxCount: 1 },
+    { name: "completion_photo", maxCount: 1 }
+  ]),
+  async (req, res) => {
   try {
     const repairs = await readRepairsFromDb();
     const repairId = req.params.repairId;
@@ -1014,6 +1020,58 @@ app.put("/repairs/:repairId/visit", async (req, res) => {
     if (!repair) {
       return res.status(404).json({ message: "Repair not found" });
     }
+    repair.completion = repair.completion || {};
+
+    const invoiceFile = req.files?.invoice_file?.[0];
+
+    if (invoiceFile) {
+  const safeInvoiceName = invoiceFile.originalname.replace(
+    /[^a-zA-Z0-9._-]/g,
+    "_"
+  );
+
+  const invoicePath =
+    `completions/${repairId}/invoice-${Date.now()}-${safeInvoiceName}`;
+
+  const { error: invoiceUploadError } = await supabase.storage
+    .from("repair-files")
+    .upload(invoicePath, invoiceFile.buffer, {
+      contentType: invoiceFile.mimetype,
+      upsert: false
+    });
+
+  if (invoiceUploadError) {
+    throw invoiceUploadError;
+  }
+
+  repair.completion.invoice_file = invoicePath;
+  addHistory(repair, "Tax invoice uploaded");
+}
+  const completionPhoto = req.files?.completion_photo?.[0];
+
+if (completionPhoto) {
+  const safePhotoName = completionPhoto.originalname.replace(
+    /[^a-zA-Z0-9._-]/g,
+    "_"
+  );
+
+  const completionPhotoPath =
+    `completions/${repairId}/photo-${Date.now()}-${safePhotoName}`;
+
+  const { error: photoUploadError } = await supabase.storage
+    .from("repair-files")
+    .upload(completionPhotoPath, completionPhoto.buffer, {
+      contentType: completionPhoto.mimetype,
+      upsert: false
+    });
+
+  if (photoUploadError) {
+    throw photoUploadError;
+  }
+
+  repair.completion.completion_photo = completionPhotoPath;
+  addHistory(repair, "Completion photo uploaded");
+  }
 
     repair.completion_date = completion_date || "";
     repair.completion_time = completion_time || "";

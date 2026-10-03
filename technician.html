@@ -479,6 +479,21 @@
                 <textarea id="materials-used-${r.repair_id}"
                 placeholder="List materials used">${r.materials_used || ''}</textarea>
 
+                <div class="label">Tax Invoice</div>
+
+                <input
+                type="file"
+                id="invoice-file-${r.repair_id}"
+                accept=".pdf,.jpg,.jpeg,.png"
+                />
+
+                <div class="label">Completed Job Photo</div>
+                <input
+                type="file"
+                id="completion-photo-${r.repair_id}"
+                accept="image/*"
+                />
+
                 <button type="button"
                  onclick="saveCompletion('${r.repair_id}')">
                 Save Completion
@@ -538,19 +553,34 @@
   const completion_notes = document.getElementById(`completion-notes-${repairId}`).value;
   const materials_used = document.getElementById(`materials-used-${repairId}`).value;
 
+
+  const invoiceInput = document.getElementById(`invoice-file-${repairId}`);
+  const completionPhotoInput = document.getElementById(`completion-photo-${repairId}`);
+
+  const formData = new FormData();
+
+  formData.append("completion_date", completion_date);
+  formData.append("completion_time", completion_time);
+  formData.append("completion_notes", completion_notes);
+  formData.append("materials_used", materials_used);
+
+if (invoiceInput.files.length > 0) {
+  formData.append("invoice_file", invoiceInput.files[0]);
+}
+
+if (completionPhotoInput.files.length > 0) {
+  formData.append("completion_photo", completionPhotoInput.files[0]);
+}
+
   try {
-    await fetch(`/repairs/${repairId}/completion`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        completion_date,
-        completion_time,
-        completion_notes,
-        materials_used
-      })
-    });
+    const res = await fetch(`/repairs/${repairId}/completion`, {
+  method: "PUT",
+  body: formData
+});
+
+if (!res.ok) {
+  throw new Error("Completion save failed");
+}
 
     alert("Completion saved");
     loadJobs();
