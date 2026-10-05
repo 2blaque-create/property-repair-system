@@ -649,6 +649,54 @@ async function openQuotation(repairId) {
     alert("Unable to open quotation");
   }
 }
+async function openCompletionInvoice(repairId) {
+  const invoiceWindow = window.open("", "_blank");
+
+  try {
+    const res = await fetch(`/repairs/${repairId}/completion-invoice-url`);
+
+    if (!res.ok) {
+      throw new Error("Unable to get completion invoice link");
+    }
+
+    const data = await res.json();
+
+    invoiceWindow.location.href = data.url;
+
+  } catch (error) {
+    console.error("Open completion invoice error:", error);
+
+    if (invoiceWindow) {
+      invoiceWindow.close();
+    }
+
+    alert("Unable to open tax invoice");
+  }
+}
+async function openCompletionPhoto(repairId) {
+  const photoWindow = window.open("", "_blank");
+
+  try {
+    const res = await fetch(`/repairs/${repairId}/completion-photo-url`);
+
+    if (!res.ok) {
+      throw new Error("Unable to get completion photo link");
+    }
+
+    const data = await res.json();
+
+    photoWindow.location.href = data.url;
+
+  } catch (error) {
+    console.error("Open completion photo error:", error);
+
+    if (photoWindow) {
+      photoWindow.close();
+    }
+
+    alert("Unable to open completed job photo");
+  }
+}
 
 function renderRepairs(list) {
 
@@ -1107,6 +1155,20 @@ const photoHtml = repair.photo
 
                 <div class="detail-label">Materials Used</div>
                 <div>${repair.materials_used || "-"}</div>
+
+                <div class="detail-label">Tax Invoice</div>
+                <div>
+                ${repair.completion?.invoice_file
+                 ? `<button type="button" onclick="openCompletionInvoice('${repair.repair_id}')">View Tax Invoice</button>`
+                 : "-"}
+                </div>
+
+                <div class="detail-label">Completed Job Photo</div>
+                <div>
+                ${repair.completion?.completion_photo
+                 ? `<button type="button" onclick="openCompletionPhoto('${repair.repair_id}')">View Completed Job Photo</button>`
+                 : "-"}
+                </div>
 
                 <div class="detail-label">Quote Status</div>
                 <div>${repair.quotation_status || "Pending / Not decided"}</div>

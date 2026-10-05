@@ -1144,6 +1144,104 @@ app.get("/repairs/:repairId/quotation-url", async (req, res) => {
     });
   }
 });
+app.get("/repairs/:repairId/completion-invoice-url", async (req, res) => {
+  try {
+    const repairs = await readRepairsFromDb();
+    const repairId = req.params.repairId;
+
+    const repair = repairs.find(
+      r => r.repair_id === repairId
+    );
+
+    if (!repair) {
+      return res.status(404).json({
+        message: "Repair not found"
+      });
+    }
+
+    const invoiceFile = repair.completion?.invoice_file;
+
+    if (!invoiceFile) {
+      return res.status(404).json({
+        message: "No completion invoice available"
+      });
+    }
+
+    if (invoiceFile.startsWith("/uploads/")) {
+      return res.json({
+        url: invoiceFile
+      });
+    }
+
+    const { data, error } = await supabase.storage
+      .from("repair-files")
+      .createSignedUrl(invoiceFile, 300);
+
+    if (error) {
+      throw error;
+    }
+
+    return res.json({
+      url: data.signedUrl
+    });
+
+  } catch (error) {
+    console.error("Signed completion invoice URL error:", error);
+
+    return res.status(500).json({
+      message: "Unable to open completion invoice"
+    });
+  }
+});
+app.get("/repairs/:repairId/completion-photo-url", async (req, res) => {
+  try {
+    const repairs = await readRepairsFromDb();
+    const repairId = req.params.repairId;
+
+    const repair = repairs.find(
+      r => r.repair_id === repairId
+    );
+
+    if (!repair) {
+      return res.status(404).json({
+        message: "Repair not found"
+      });
+    }
+
+    const completionPhoto = repair.completion?.completion_photo;
+
+    if (!completionPhoto) {
+      return res.status(404).json({
+        message: "No completion photo available"
+      });
+    }
+
+    if (completionPhoto.startsWith("/uploads/")) {
+      return res.json({
+        url: completionPhoto
+      });
+    }
+
+    const { data, error } = await supabase.storage
+      .from("repair-files")
+      .createSignedUrl(completionPhoto, 300);
+
+    if (error) {
+      throw error;
+    }
+
+    return res.json({
+      url: data.signedUrl
+    });
+
+  } catch (error) {
+    console.error("Signed completion photo URL error:", error);
+
+    return res.status(500).json({
+      message: "Unable to open completion photo"
+    });
+  }
+});
     app.get("/repairs/:repairId/photo-url", async (req, res) => {
   try {
     const repairs = await readRepairsFromDb();
